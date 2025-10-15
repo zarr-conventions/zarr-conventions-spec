@@ -4,7 +4,7 @@ This repo describes the specification for Zarr Conventions
 
 ## Definition
 
-A **Zarr convention** is a set of attributes on a Zarr Array or Group which confer special meaning to the data contained within. Conventions are defined via Array or Group `attributes`.
+A **Zarr convention** is a set of attributes on a Zarr Array or Group which confer special meaning about the data contained within. Conventions are defined via Array or Group `attributes`.
 The key feature of Zarr conventions is that they are _safely ignorable_ by low-level Zarr implementations. Conventions therefore may not change how data are encoded or stored; only how they are interpreted by the end user.
 
 Examples of possible Conventions include:
@@ -13,21 +13,6 @@ Examples of possible Conventions include:
 - OME-Zarr
 
 The _zarr conventions_ concept is inspired by the highly successful [STAC extensions](https://stac-extensions.github.io/) framework.
-
-## Relationship with Extensions
-
-The Zarr V3 spec defines five specific [Array extension points](https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html#extension-points): data type, chunk grid, chunk key encoding, codecs, and storage transformers.
-This specification covers situations not addressed by those extension points.
-
-Additionally, the concept of "Generic Extensions" has been proposed in [ZEP-9](), but not yet implemented.
-Subsequent discussion led to the conclusion that many of the use cases for generic extensions could potentially be implemented in a more light-weight way solely using `attributes`.
-This specification is a response to that suggestion.
-
-A user should be able to safely ignore a convention and still be able to interact with the data via a Zarr library, even if some domain-specific context or functionality is missing.
-If the data are completely meaningless or unintelligible without the convention, then it should probably be an extension instead.
-
-It is an explicit goal of the Conventions effort to prototype a working process for decentralized, community-driven development of new Zarr-related functionality in a "low stakes" context (constrained just to the `attributes` field).
-The lessons learned from this may be applied to the more formal Extensions framework in the future
 
 ## Requirements
 
@@ -88,7 +73,6 @@ Minimum comformant Convention.
             }
     }
 }
-
 ```
 
 
@@ -115,6 +99,21 @@ More verbose example:
 }
 ```
 
+## Relationship with Extensions
+
+The Zarr V3 spec defines five specific [Array extension points](https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html#extension-points): data type, chunk grid, chunk key encoding, codecs, and storage transformers.
+This specification covers situations not addressed by those extension points.
+
+Additionally, the concept of "Generic Extensions" has been proposed in [ZEP-9](https://zarr.dev/zeps/draft/ZEP0009.html), but progress towards acceptance was deliberately paused.
+Discussion led to the conclusion that many of the use cases for generic extensions could potentially be implemented in a more light-weight way solely using `attributes`.
+This specification is a response to that suggestion.
+
+A user should be able to safely ignore a convention and still be able to interact with the data via a Zarr library, even if some domain-specific context or functionality is missing.
+If the data are completely meaningless or unintelligible without the convention, then it should probably be an extension instead.
+
+It is an explicit goal of the Conventions effort to prototype a working process for decentralized, community-driven development of new Zarr-related functionality in a "low stakes" context (constrained just to the `attributes` field).
+The lessons learned from this may be applied to the more formal Extensions framework in the future.
+
 # FAQ
 
 - Why isn't `zarr_conventions_metadata` a top-level metadata key?
@@ -127,7 +126,7 @@ More verbose example:
   - Instead, it is possible to document these conventions as "registered attributes" in the zarr-extensions repo.
 
 - What is the mechanisms for discovery of conventions?
-  - The `zarr-conventions` repository provides an [optional] central place for the community to maintain and discover conventions. The `zarr-conventions/template` repo makes it easy to author new conventions. 
+  - The `zarr-conventions` repository provides an [optional](https://github.com/zarr-conventions#share-your-convention) central place for the community to maintain and discover conventions. The [`zarr-conventions/template`](https://github.com/zarr-conventions/template) repo makes it easy to author new conventions. 
   - In the future, we may create a website similar to [STAC extensions](https://stac-extensions.github.io/).
 
 - What if you don't want a convention to be discoverable?
@@ -151,20 +150,19 @@ More verbose example:
   - It provides a way to validate your convention
   
 - Why is schema not required?
-  - In order to support opaque/provided 
+  - In order to support conventions that are designed to be private and therefore do not have a publicly resolvable schema.
 
 - Why is name recommended?
   - We use it to populate the website showing all conventions; tools also use it for nice metadata representations.
 
 - Why is name not required?
+  - Name should only be used for human-oriented displays, it isn't required because it isn't strictly necessary for a convention to b useful.
 
 - Why do you use a UUID for the key?
     - It provides a decentralized version for guaranteed uniqueness
 
-
-- *Happy to see a more decentralized possibility to extend Zarr.* However, why is the mehcanism limited to the configuration field and do not apply to the entire `attributes` object? This limits composability and the possibility for an extension to extend another as it is often done in STAC.
-
-Category of use-cases
+- *Happy to see a more decentralized possibility to extend Zarr.* However, why is the machinism limited to the configuration field and do not apply to the entire `attributes` object? This limits composability and the possibility for an extension to extend another as it is often done in STAC.
+  - We have heard this immediate reaction from a few library developers and are currently taking it under consideration. The tradeoffs are between forwards-compatibility (if the conventions metadata permits setting which other keys are used) and isolation (if conventions are limited to their configuration key).
 
 # Implementations
 
