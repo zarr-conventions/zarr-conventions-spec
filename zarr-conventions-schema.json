@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://zarr-conventions.github.io/zarr-conventions-spec/zarr-conventions-schema.json",
+  "title": "Zarr Conventions Specification",
+  "description": "JSON schema for validating Zarr conventions metadata",
+  "type": "object",
+  "properties": {
+    "attributes": {
+      "type": "object",
+      "properties": {
+        "zarr_conventions_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+          "description": "A semver-compatible string indicating the version of the Zarr conventions specification"
+        },
+        "zarr_conventions_metadata": {
+          "type": "object",
+          "patternProperties": {
+            "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$": {
+              "$ref": "#/$defs/conventionMetadataObject"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Object containing convention metadata, keyed by UUID4 strings"
+        }
+      },
+      "required": ["zarr_conventions_version", "zarr_conventions_metadata"],
+      "additionalProperties": true
+    }
+  },
+  "required": ["attributes"],
+  "additionalProperties": true,
+  "$defs": {
+    "conventionMetadataObject": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+          "description": "A semver-compatible string indicating the version of the convention"
+        },
+        "configuration": {
+          "type": "object",
+          "description": "Object containing the attributes described by the convention"
+        },
+        "name": {
+          "type": "string",
+          "description": "A short human-readable name used to represent the Convention"
+        },
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "description": "A URL which resolves to a JSON schema document describing the convention's configuration object"
+        },
+        "spec": {
+          "type": "string",
+          "format": "uri",
+          "description": "A URL which resolves to a document describing the Convention in more detail"
+        },
+        "description": {
+          "type": "string",
+          "description": "A concise description of the convention"
+        }
+      },
+      "required": ["version", "configuration"],
+      "additionalProperties": false
+    }
+  }
+}
