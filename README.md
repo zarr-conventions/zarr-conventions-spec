@@ -35,66 +35,157 @@ The following applies to elements of a Zarr hierarchy, either Arrays or Groups (
 
 Nodes which conform to this specification MUST contain the following fields within their `attributes`:
   - `zarr_conventions_version` - a semver-compatible string indicating the version of _this specification_. The current version is `0.1.0`.
-  - `zarr_conventions_metadata` - an object, described below.
+  - `zarr_conventions` - an array of objects, described below.
+
+### Convention Registration via `zarr_conventions`
 
 Each convention is uniquely identified by a [UUID](https://www.rfc-editor.org/rfc/rfc9562.html).
 When creating a new convention, the creator MUST use the [UUID4 function](https://www.rfc-editor.org/rfc/rfc9562.html#name-uuid-version-4) to generate a unique identifier for their convention.
-The `zarr_conventions_metadata` object MUST contain only UUIDs as keys, encoded as strings.
-The values are called a "convention metadata object".
+
+The `zarr_conventions` array contains convention registration objects. Each array item MUST be an object containing a single key-value pair where:
+- The key is a UUID string identifying the convention
+- The value is a "convention metadata object" (described below)
+
 Once created, the convention's UUID MUST NOT change.
 (Evolution of the convention instead is managed via `version`, described below.)
 
-Each convention metadata object MUST contain the following fields
+Each convention metadata object MUST contain the following field:
  - `version` - a semver-compatible string indicating the version of the convention. New conventions should adopt `0.1.0` as their starting version number.
- - `configuration` - an object containing the attributes described by the convention.
 
 Additionally, a convention metadata object SHOULD contain the following fields:
-- `name` - a short human-readable name used to represent the Convention in contexts where such a name is desirable (e.g websites). The name MUST NOT be used by tools to identify the Convention (use the UUID instead). Names are not guaranteed to be unique across Conventions. If `name` is not present, tools SHOULD use the UUID instead to represent the Convention. 
-- `schema` - a URL which resolves to a JSON schema document which describes the convention's `configuration` object.
+- `name` - a short human-readable name used to represent the Convention in contexts where such a name is desirable (e.g websites). The name MUST NOT be used by tools to identify the Convention (use the UUID instead). Names are not guaranteed to be unique across Conventions. If `name` is not present, tools SHOULD use the UUID instead to represent the Convention.
+- `schema` - a URL which resolves to a JSON schema document which describes the convention's properties.
 
-The conventions metadata object MAY contain the following fields:
+The convention metadata object MAY contain the following fields:
 - `spec` - a URL which resolves to a document describing the Convention in more detail.
-- `description`: a concise description of the convention.
+- `description` - a concise description of the convention.
 
-The conventions metadata object MUST NOT contain additional fields.
+The convention metadata object MUST NOT contain additional fields.
+
+### Convention Properties
+
+Convention properties exist at the root `attributes` level. This enables composability, allowing conventions to extend and reference properties from other conventions.
+
+#### Namespace Prefixes
+
+To prevent collisions, convention properties SHOULD use namespace prefixes (e.g., `proj:`, `ome:`).
+
+For example:
+
+- `proj:code` - projection code
+- `proj:bbox` - bounding box in projected coordinates
+- `ome:channels` - OME-Zarr channels information
+
+#### Domain-Agnostic Convention Objects
+
+Conventions that define a domain-agnostic object (such as `multiscales`) MAY use an unprefixed name for that object. Properties within such objects follow the convention's internal naming scheme.
+
+#### Composability
+
+Conventions can extend objects defined by other conventions by adding namespaced properties. For example, a geospatial projection convention (`proj:`) can add projection-specific properties to items within a multiscales layout:
+
+```json
+{
+  "multiscales": {
+    "layout": [
+      {
+        "group": "r10m",
+        "proj:shape": [1200, 1200],
+        "proj:transform": [10.0, 0.0, 500000.0, 0.0, -10.0, 5000000.0]
+      }
+    ]
+  }
+}
+```
+
+To support composability, convention schemas MUST set `additionalProperties: true` on objects that can be extended by other conventions.
 
 ## Examples
 
-Minimum comformant Convention.
+Minimum conformant Convention.
 
 ```json
 {
     "attributes": {
         "zarr_conventions_version": "0.1.0",
-        "zarr_conventions_metadata": {
-            "0396f4cd-47fa-4b09-8c79-9072d90ceed3": {
-                "version": "0.1.0",
-                "configuration": {}
+        "zarr_conventions": [
+            {
+                "0396f4cd-47fa-4b09-8c79-9072d90ceed3": {
+                    "version": "0.1.0"
+                }
             }
+        ]
     }
 }
 ```
 
-
-More verbose example:
+More complete example with projection information:
 
 ```json
 {
     "attributes": {
         "zarr_conventions_version": "0.1.0",
-        "zarr_conventions_metadata": {
-            "f010a634-3525-416e-9320-8f44b5bc352c": {
-                "version": "0.1.0",
-                "schema": "https://github.com/EOPF-Explorer/data-model/v0.1.0/attributes/geo/proj/schema.json",
-                "name": "geo:proj",
-                "description": "Geospatial project information",
-                "spec": "https://github.com/EOPF-Explorer/data-model/v0.1.0/README.md",
-                "configuration": {
-                    "code": "epsg:4326",
-                    "transform": [0, 0, 1, 1, 1, 1]
+        "zarr_conventions": [
+            {
+                "f17cb550-5864-4468-aeb7-f3180cfb622f": {
+                    "version": "0.1.0",
+                    "schema": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
+                    "name": "proj:",
+                    "description": "Coordinate reference system information for geospatial data",
+                    "spec": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
                 }
             }
-        }
+        ],
+        "proj:code": "EPSG:4326",
+        "proj:transform": [1.0, 0.0, 0.0, 0.0, -1.0, 90.0]
+    }
+}
+```
+
+Example demonstrating composability with multiscales and projection:
+
+```json
+{
+    "attributes": {
+        "zarr_conventions_version": "0.1.0",
+        "zarr_conventions": [
+            {
+                "d35379db-88df-4056-af3a-620245f8e347": {
+                    "version": "0.1.0",
+                    "schema": "https://raw.githubusercontent.com/zarr-experimental/multiscales/refs/tags/v0.1.0/schema.json",
+                    "name": "multiscales",
+                    "description": "Multiscale layout of zarr datasets",
+                    "spec": "https://github.com/zarr-experimental/multiscales/blob/v0.1.0/README.md"
+                }
+            },
+            {
+                "f17cb550-5864-4468-aeb7-f3180cfb622f": {
+                    "version": "0.1.0",
+                    "schema": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
+                    "name": "proj:",
+                    "description": "Coordinate reference system information for geospatial data",
+                    "spec": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
+                }
+            }
+        ],
+        "multiscales": {
+            "layout": [
+                {
+                    "group": "r10m",
+                    "proj:shape": [1200, 1200],
+                    "proj:transform": [10.0, 0.0, 500000.0, 0.0, -10.0, 5000000.0]
+                },
+                {
+                    "group": "r20m",
+                    "from_group": "r10m",
+                    "scale": [2.0, 2.0],
+                    "proj:shape": [600, 600],
+                    "proj:transform": [20.0, 0.0, 500000.0, 0.0, -20.0, 5000000.0]
+                }
+            ]
+        },
+        "proj:code": "EPSG:32633",
+        "proj:bbox": [500000.0, 4900000.0, 600000.0, 5000000.0]
     }
 }
 ```
@@ -161,8 +252,11 @@ The lessons learned from this may be applied to the more formal Extensions frame
 - Why do you use a UUID for the key?
     - It provides a decentralized version for guaranteed uniqueness
 
-- *Happy to see a more decentralized possibility to extend Zarr.* However, why is the machinism limited to the configuration field and do not apply to the entire `attributes` object? This limits composability and the possibility for an extension to extend another as it is often done in STAC.
-  - We have heard this immediate reaction from a few library developers and are currently taking it under consideration. The tradeoffs are between forwards-compatibility (if the conventions metadata permits setting which other keys are used) and isolation (if conventions are limited to their configuration key).
+- How does this specification enable composability?
+  - Convention properties exist at the root `attributes` level (not isolated in `configuration` fields), allowing conventions to reference and extend properties from other conventions. This mirrors the proven pattern used by STAC extensions. For example, a projection convention can add projection-specific properties to items within a multiscales layout.
+  
+- How are property name collisions prevented?
+  - Conventions use namespace prefixes (e.g., `proj:`, `ome:`) to prevent collisions. This approach has been successfully used by the STAC community for years without collision issues. Convention authors coordinate on naming within their domain.
 
 # Implementations
 
