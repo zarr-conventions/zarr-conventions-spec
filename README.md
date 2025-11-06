@@ -98,7 +98,7 @@ Conventions can extend objects defined by other conventions by adding namespaced
 }
 ```
 
-To support composability, convention schemas MUST set `additionalProperties: true` on objects that can be extended by other conventions.
+If a convention wants to allow other conventions to extend its objects, its schema MUST set `additionalProperties: true` on those extensible objects. Since `additionalProperties` defaults to `false` in JSON Schema, conventions that do not explicitly set this to `true` will not support being extended by other conventions.
 
 ## Examples
 
