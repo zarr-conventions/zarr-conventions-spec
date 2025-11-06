@@ -68,7 +68,7 @@ Convention properties exist at the root `attributes` level. This enables composa
 
 #### Namespace Prefixes
 
-To prevent collisions, convention properties SHOULD use namespace prefixes (e.g., `proj:`, `ome:`).
+To prevent collisions, convention properties SHOULD use namespace prefixes (e.g., `proj:`, `ome:`), especially if the convention applies to a specific domain.
 
 For example:
 
@@ -78,7 +78,7 @@ For example:
 
 #### Domain-Agnostic Convention Objects
 
-Conventions that define a domain-agnostic object (such as `multiscales`) MAY use an unprefixed name for that object. Properties within such objects follow the convention's internal naming scheme.
+Conventions that define a domain-agnostic object (such as `multiscales`) MAY use an unprefixed name for that object. Properties within such objects follow the convention's internal naming scheme. Those conventions MUST let additional properties be added by other conventions to support composability.
 
 #### Composability
 
