@@ -68,7 +68,9 @@ Convention properties exist at the root `attributes` level. This enables composa
 
 #### Namespace Prefixes
 
-To prevent collisions, convention properties SHOULD use namespace prefixes (e.g., `proj:`, `ome:`), especially if the convention applies to a specific domain.
+For conventions which wish to avoid collisions with other conventions, the properties SHOULD either 
+- use namespace prefixes on individual attributes (e.g., `proj:`) OR
+- nest their properties under a single attribute key (e.g. `ome`)
 
 For example:
 
