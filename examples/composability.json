@@ -1,27 +1,24 @@
-{"zarr_format": 3,
+{
+  "zarr_format": 3,
   "node_type": "group",
   "attributes": {
     "zarr_conventions_version": "0.1.0",
-    "zarr_conventions": [
-      {
-        "d35379db-88df-4056-af3a-620245f8e347": {
-          "version": "0.1.0",
-          "schema": "https://raw.githubusercontent.com/zarr-experimental/multiscales/refs/tags/v0.1.0/schema.json",
-          "name": "multiscales",
-          "description": "Multiscale layout of zarr datasets",
-          "spec": "https://github.com/zarr-experimental/multiscales/blob/v0.1.0/README.md"
-        }
+    "zarr_conventions": {
+      "d35379db-88df-4056-af3a-620245f8e347": {
+        "version": "0.1.0",
+        "schema": "https://raw.githubusercontent.com/zarr-experimental/multiscales/refs/tags/v0.1.0/schema.json",
+        "name": "multiscales",
+        "description": "Multiscale layout of zarr datasets",
+        "spec": "https://github.com/zarr-experimental/multiscales/blob/v0.1.0/README.md"
       },
-      {
-        "f17cb550-5864-4468-aeb7-f3180cfb622f": {
-          "version": "0.1.0",
-          "schema": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
-          "name": "proj:",
-          "description": "Coordinate reference system information for geospatial data",
-          "spec": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
-        }
+      "f17cb550-5864-4468-aeb7-f3180cfb622f": {
+        "version": "0.1.0",
+        "schema": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
+        "name": "proj:",
+        "description": "Coordinate reference system information for geospatial data",
+        "spec": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
       }
-    ],
+    },
     "multiscales": {
       "layout": [
         {

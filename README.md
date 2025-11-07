@@ -23,6 +23,8 @@ These are the requirements which motivated the conventions framework.
 - Conventions must not require approval of a central authority (e.g. Zarr Steering Council, Zarr Implementation Council); anyone can create a Convention
 - Conventions should be self describing in terms of the specific metadata fields they contain.
 - Convention metadata attributes must not be able to collide or conflict with metadata attributes of other conventions.
+- Conventions must support composability, allowing one convention to extend or reference properties from another convention.
+- Convention properties must be accessible at a predictable location in the metadata structure.
 
 Non-requirements
 - This specification addresses only _new data_; conventions do not retroactively apply to existing data written before the creation of the Conventions framework.
@@ -35,16 +37,14 @@ The following applies to elements of a Zarr hierarchy, either Arrays or Groups (
 
 Nodes which conform to this specification MUST contain the following fields within their `attributes`:
   - `zarr_conventions_version` - a semver-compatible string indicating the version of _this specification_. The current version is `0.1.0`.
-  - `zarr_conventions` - an array of objects, described below.
+  - `zarr_conventions` - an object, described below.
 
 ### Convention Registration via `zarr_conventions`
 
 Each convention is uniquely identified by a [UUID](https://www.rfc-editor.org/rfc/rfc9562.html).
 When creating a new convention, the creator MUST use the [UUID4 function](https://www.rfc-editor.org/rfc/rfc9562.html#name-uuid-version-4) to generate a unique identifier for their convention.
 
-The `zarr_conventions` array contains convention registration objects. Each array item MUST be an object containing a single key-value pair where:
-- The key is a UUID string identifying the convention
-- The value is a "convention metadata object" (described below)
+The `zarr_conventions` object contains convention registration metadata. Each key MUST be a UUID string identifying a convention, and each value MUST be a "convention metadata object" (described below).
 
 Once created, the convention's UUID MUST NOT change.
 (Evolution of the convention instead is managed via `version`, described below.)
@@ -109,13 +109,11 @@ Minimum conformant Convention.
 {
     "attributes": {
         "zarr_conventions_version": "0.1.0",
-        "zarr_conventions": [
-            {
-                "0396f4cd-47fa-4b09-8c79-9072d90ceed3": {
-                    "version": "0.1.0"
-                }
+        "zarr_conventions": {
+            "0396f4cd-47fa-4b09-8c79-9072d90ceed3": {
+                "version": "0.1.0"
             }
-        ]
+        }
     }
 }
 ```
@@ -126,17 +124,15 @@ More complete example with projection information:
 {
     "attributes": {
         "zarr_conventions_version": "0.1.0",
-        "zarr_conventions": [
-            {
-                "f17cb550-5864-4468-aeb7-f3180cfb622f": {
-                    "version": "0.1.0",
-                    "schema": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
-                    "name": "proj:",
-                    "description": "Coordinate reference system information for geospatial data",
-                    "spec": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
-                }
+        "zarr_conventions": {
+            "f17cb550-5864-4468-aeb7-f3180cfb622f": {
+                "version": "0.1.0",
+                "schema": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
+                "name": "proj:",
+                "description": "Coordinate reference system information for geospatial data",
+                "spec": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
             }
-        ],
+        },
         "proj:code": "EPSG:4326",
         "proj:transform": [1.0, 0.0, 0.0, 0.0, -1.0, 90.0]
     }
@@ -149,26 +145,22 @@ Example demonstrating composability with multiscales and projection:
 {
     "attributes": {
         "zarr_conventions_version": "0.1.0",
-        "zarr_conventions": [
-            {
-                "d35379db-88df-4056-af3a-620245f8e347": {
-                    "version": "0.1.0",
-                    "schema": "https://raw.githubusercontent.com/zarr-experimental/multiscales/refs/tags/v0.1.0/schema.json",
-                    "name": "multiscales",
-                    "description": "Multiscale layout of zarr datasets",
-                    "spec": "https://github.com/zarr-experimental/multiscales/blob/v0.1.0/README.md"
-                }
+        "zarr_conventions": {
+            "d35379db-88df-4056-af3a-620245f8e347": {
+                "version": "0.1.0",
+                "schema": "https://raw.githubusercontent.com/zarr-experimental/multiscales/refs/tags/v0.1.0/schema.json",
+                "name": "multiscales",
+                "description": "Multiscale layout of zarr datasets",
+                "spec": "https://github.com/zarr-experimental/multiscales/blob/v0.1.0/README.md"
             },
-            {
-                "f17cb550-5864-4468-aeb7-f3180cfb622f": {
-                    "version": "0.1.0",
-                    "schema": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
-                    "name": "proj:",
-                    "description": "Coordinate reference system information for geospatial data",
-                    "spec": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
-                }
+            "f17cb550-5864-4468-aeb7-f3180cfb622f": {
+                "version": "0.1.0",
+                "schema": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
+                "name": "proj:",
+                "description": "Coordinate reference system information for geospatial data",
+                "spec": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
             }
-        ],
+        },
         "multiscales": {
             "layout": [
                 {
