@@ -76,7 +76,6 @@ For example:
 
 - `proj:code` - projection code
 - `proj:bbox` - bounding box in projected coordinates
-- `ome:channels` - OME-Zarr channels information
 
 #### Domain-Agnostic Convention Objects
 
