@@ -22,7 +22,6 @@ These are the requirements which motivated the conventions framework.
 - Conventions must be definable for both Arrays and Groups.
 - Conventions must not require approval of a central authority (e.g. Zarr Steering Council, Zarr Implementation Council); anyone can create a Convention
 - Conventions should be self describing in terms of the specific metadata fields they contain.
-- Convention metadata attributes must not be able to collide or conflict with metadata attributes of other conventions.
 - Conventions must support composability, allowing one convention to extend or reference properties from another convention.
 - Convention properties must be accessible at a predictable location in the metadata structure.
 
