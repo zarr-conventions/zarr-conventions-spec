@@ -8,23 +8,26 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "zarr_conventions_version": {
-          "type": "string",
-          "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-          "description": "A semver-compatible string indicating the version of the Zarr conventions specification"
-        },
         "zarr_conventions": {
           "type": "object",
+          "properties": {
+            "version": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+              "description": "A semver-compatible string indicating the version of the Zarr conventions specification"
+            }
+          },
           "patternProperties": {
             "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$": {
               "$ref": "#/$defs/conventionMetadataObject"
             }
           },
+          "required": ["version"],
           "additionalProperties": false,
-          "description": "Object containing convention metadata, keyed by UUID4 strings"
+          "description": "Object containing a version field and convention metadata, keyed by UUID4 strings"
         }
       },
-      "required": ["zarr_conventions_version", "zarr_conventions"],
+      "required": ["zarr_conventions"],
       "additionalProperties": true
     }
   },

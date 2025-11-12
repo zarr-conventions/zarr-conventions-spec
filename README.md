@@ -1,6 +1,6 @@
 # Zarr Convention Specification
 
-This repo describes the specification for Zarr Conventions
+This repo describes the specification for Zarr Conventions.
 
 ## Definition
 
@@ -34,11 +34,12 @@ Non-requirements
 
 The following applies to elements of a Zarr hierarchy, either Arrays or Groups (henceforth "nodes").
 
-Nodes which conform to this specification MUST contain the following fields within their `attributes`:
-  - `zarr_conventions_version` - a semver-compatible string indicating the version of _this specification_. The current version is `0.1.0`.
+Nodes which conform to this specification MUST contain the following field within their `attributes`:
   - `zarr_conventions` - an object, described below.
 
 ### Convention Registration via `zarr_conventions`
+
+The version of this specification is indicated via the `version` key within the `zarr_conventions` object.
 
 Each convention is uniquely identified by a [UUID](https://www.rfc-editor.org/rfc/rfc9562.html).
 When creating a new convention, the creator MUST use the [UUID4 function](https://www.rfc-editor.org/rfc/rfc9562.html#name-uuid-version-4) to generate a unique identifier for their convention.
@@ -104,8 +105,8 @@ Minimum conformant Convention.
 ```json
 {
     "attributes": {
-        "zarr_conventions_version": "0.1.0",
         "zarr_conventions": {
+            "version": "1..0",
             "0396f4cd-47fa-4b09-8c79-9072d90ceed3": {
                 "version": "0.1.0"
             }
@@ -119,8 +120,8 @@ More complete example with projection information:
 ```json
 {
     "attributes": {
-        "zarr_conventions_version": "0.1.0",
         "zarr_conventions": {
+            "version": "1.0.0",
             "f17cb550-5864-4468-aeb7-f3180cfb622f": {
                 "version": "0.1.0",
                 "schema": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
@@ -140,8 +141,8 @@ Example demonstrating composability with multiscales and projection:
 ```json
 {
     "attributes": {
-        "zarr_conventions_version": "0.1.0",
         "zarr_conventions": {
+            "version": "1.0.0",
             "d35379db-88df-4056-af3a-620245f8e347": {
                 "version": "0.1.0",
                 "schema": "https://raw.githubusercontent.com/zarr-experimental/multiscales/refs/tags/v0.1.0/schema.json",
