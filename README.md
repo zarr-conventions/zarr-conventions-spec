@@ -42,13 +42,13 @@ Nodes which conform to this specification MUST contain the following field withi
 The `zarr_conventions` attribute MUST be an array of convention metadata objects. Each object in the array describes one convention that applies to the node.
 
 Each convention metadata object MUST contain at least one of the following fields:
- - `schema` - a URL which resolves to a JSON schema document which describes the convention's properties.
- - `spec` - a URL which resolves to a document describing the Convention in more detail.
+ - `schema_url` - a URL which resolves to a JSON schema document which describes the convention's properties.
+ - `spec_url` - a URL which resolves to a document describing the Convention in more detail.
 
-At least one of `schema` or `spec` MUST be present. If both are present, the `schema` URL serves as the primary unique identifier for the convention. If only `spec` is present, it serves as the unique identifier.
+At least one of `schema_url` or `spec_url` MUST be present. If both are present, the `schema_url` serves as the primary unique identifier for the convention. If only `spec_url` is present, it serves as the unique identifier.
 
 Additionally, a convention metadata object SHOULD contain the following field:
-- `name` - a short human-readable name used to represent the Convention in contexts where such a name is desirable (e.g websites). The name MUST NOT be used by tools to identify the Convention (use the `schema` or `spec` URL instead). Names are not guaranteed to be unique across Conventions. If `name` is not present, tools SHOULD use the identifier URL instead to represent the Convention.
+- `name` - a short human-readable name used to represent the Convention in contexts where such a name is desirable (e.g websites). The name MUST NOT be used by tools to identify the Convention (use the `schema_url` or `spec_url` instead). Names are not guaranteed to be unique across Conventions. If `name` is not present, tools SHOULD use the identifier URL instead to represent the Convention.
 
 The convention metadata object MAY contain the following field:
 - `description` - a concise description of the convention.
@@ -57,13 +57,13 @@ The convention metadata object MUST NOT contain additional fields beyond those s
 
 #### Convention Identity and Versioning
 
-Conventions are uniquely identified by their identifier URL, which is either the `schema` URL (if present) or the `spec` URL. If both are present, the `schema` URL takes precedence as the primary identifier.
+Conventions are uniquely identified by their identifier URL, which is either the `schema_url` (if present) or the `spec_url`. If both are present, the `schema_url` takes precedence as the primary identifier.
 
 The identifier URL MAY include version information (e.g., via git tags or versioned paths) to allow conventions to evolve over time.
 
 When a convention evolves:
 - Breaking changes SHOULD result in a new identifier URL (e.g., incrementing the major version in the URL path)
-- Non-breaking changes MAY update the schema/spec at the same URL or use a new URL (e.g., incrementing the minor version)
+- Non-breaking changes MAY update the schema_url/spec_url at the same URL or use a new URL (e.g., incrementing the minor version)
 
 Tools consuming conventions SHOULD use the identifier URL to determine which convention is being used and which version of that convention applies.
 
@@ -105,7 +105,7 @@ If a convention wants to allow other conventions to extend its objects, its sche
 
 ## Examples
 
-Minimum conformant Convention (with schema):
+Minimum conformant Convention (with schema_url):
 
 ```json
 {
@@ -114,14 +114,14 @@ Minimum conformant Convention (with schema):
     "attributes": {
         "zarr_conventions": [
             {
-                "schema": "https://example.com/my-convention/v0.1.0/schema.json"
+                "schema_url": "https://example.com/my-convention/v0.1.0/schema.json"
             }
         ]
     }
 }
 ```
 
-Minimum conformant Convention (with spec only):
+Minimum conformant Convention (with spec_url only):
 
 ```json
 {
@@ -130,7 +130,7 @@ Minimum conformant Convention (with spec only):
     "attributes": {
         "zarr_conventions": [
             {
-                "spec": "https://example.com/my-convention/v0.1.0/README.md"
+                "spec_url": "https://example.com/my-convention/v0.1.0/README.md"
             }
         ]
     }
@@ -146,10 +146,10 @@ More complete example with projection information:
     "attributes": {
         "zarr_conventions": [
             {
-                "schema": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
+                "schema_url": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
                 "name": "proj:",
                 "description": "Coordinate reference system information for geospatial data",
-                "spec": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
+                "spec_url": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
             }
         ],
         "proj:code": "EPSG:4326",
@@ -167,16 +167,16 @@ Example demonstrating composability with multiscales and projection:
     "attributes": {
         "zarr_conventions": [
             {
-                "schema": "https://raw.githubusercontent.com/zarr-experimental/multiscales/refs/tags/v0.1.0/schema.json",
+                "schema_url": "https://raw.githubusercontent.com/zarr-experimental/multiscales/refs/tags/v0.1.0/schema.json",
                 "name": "multiscales",
                 "description": "Multiscale layout of zarr datasets",
-                "spec": "https://github.com/zarr-experimental/multiscales/blob/v0.1.0/README.md"
+                "spec_url": "https://github.com/zarr-experimental/multiscales/blob/v0.1.0/README.md"
             },
             {
-                "schema": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
+                "schema_url": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
                 "name": "proj:",
                 "description": "Coordinate reference system information for geospatial data",
-                "spec": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
+                "spec_url": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
             }
         ],
         "multiscales": {
@@ -220,7 +220,7 @@ The lessons learned from this may be applied to the more formal Extensions frame
 
 - Why isn't `zarr_conventions` a top-level metadata key?
   - Creating a new top-level key would require a new extension point in Zarr, which in turn requires a lengthy ZEP process. 
-  - By putting `zarr_conventions` in attributes, we affirm that it is outside of the purview of the Zarr spec itself; these conventions are purely "adopter" metadata.
+  - By putting `zarr_conventions` in attributes, we affirm that it is outside of the purview of the Zarr spec itself; these conventions are purely "user" metadata.
   - Once the `zarr_conventions` mechanism has matured, we may attempt to promote it to a top-level metadata key in the future.
 
 - How should we handle pre-existing "implicit conventions" like [ome-zarr](https://ome-zarr.readthedocs.io/en/stable/) or Xarray's `_FillValue` encoding?
@@ -232,7 +232,7 @@ The lessons learned from this may be applied to the more formal Extensions frame
   - In the future, we may create a website similar to [STAC extensions](https://stac-extensions.github.io/).
 
 - What if you don't want a convention to be discoverable?
-  - Given that the URL should be resolvable, this spec does not support opaque conventions.
+  - Given that the identifying URL should be resolvable, this spec does not support opaque conventions.
  
 - Do Zarr implementations need to understand `zarr_conventions`?
   - No; by definition, conventions cannot modify core Zarr behavior (this requires extensions). They sit purely "on top" of the Zarr data model.
@@ -242,11 +242,11 @@ The lessons learned from this may be applied to the more formal Extensions frame
 - Can conventions be used for arrays or groups?
   - They can be used for either or both.
 
-- Why is schema or spec required?
-  - At least one URL is required to serve as the unique identifier for the convention. The schema URL provides validation capabilities, while the spec URL provides human-readable documentation. Having at least one ensures conventions are both identifiable and discoverable.
+- Why is schema_url or spec_url required?
+  - At least one URL is required to serve as the unique identifier for the convention. The schema_url provides validation capabilities, while the spec_url provides human-readable documentation. Having at least one ensures conventions are both identifiable and discoverable.
 
-- Should I provide both schema and spec?
-  - It's recommended to provide both when possible. The schema enables validation and tooling support, while the spec provides human-readable documentation. If you can only provide one, choose based on your use case: schema for machine validation, spec for human consumption.
+- Should I provide both schema_url and spec_url?
+  - It's recommended to provide both when possible. The schema_url enables validation and tooling support, while the spec_url provides human-readable documentation. If you can only provide one, choose based on your use case: schema_url for machine validation, spec_url for human consumption.
 
 - How do I version my convention?
   - Include version information in your convention's metadata or the schema or spec URL (e.g., using git tags like `/v0.1.0/` or versioned paths). When you make breaking changes, update to a new major version in the URL.
@@ -257,8 +257,7 @@ The lessons learned from this may be applied to the more formal Extensions frame
 - Why is name not required?
   - Name should only be used for human-oriented displays, it isn't required because it isn't strictly necessary for a convention to be useful.
 
-
-- Why use schema or spec URLs instead of UUIDs for identification?
+- Why use schema_url or spec_url instead of UUIDs for identification?
   - URLs provide a mechanism for both identification and discovery, simplifying the specification. Schema URLs enable validation, while spec URLs point to documentation. Both naturally encode version information and provide a discoverable path to more information. While this requires conventions to maintain stable URLs, this is consistent with common practices in web standards.
 
 - How does this specification enable composability?
@@ -267,7 +266,7 @@ The lessons learned from this may be applied to the more formal Extensions frame
 - How are property name collisions prevented?
   - Conventions use namespace prefixes (e.g., `proj:`, `ome:`) to prevent collisions. This approach has been successfully used by the STAC community for years without collision issues. Convention authors coordinate on naming within their domain.
 
-- What if my schema or spec URL becomes unavailable?
+- What if my schema_url or spec_url becomes unavailable?
   - Convention authors should use stable hosting for URLs (e.g., GitHub releases, permanent DOIs). Tools consuming conventions should implement caching strategies and graceful degradation when URLs are temporarily unavailable. The convention properties remain valid even if the identifier URL is unreachable. Convention authors may register a new convention conveying similar information if an identifying URL is irreconcilably lost, and should coordinate with downstream libraries about the change.
 
 # Implementations
