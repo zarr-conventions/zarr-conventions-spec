@@ -35,32 +35,37 @@ Non-requirements
 The following applies to elements of a Zarr hierarchy, either Arrays or Groups (henceforth "nodes").
 
 Nodes which conform to this specification MUST contain the following field within their `attributes`:
-  - `zarr_conventions` - an object, described below.
+  - `zarr_conventions` - an array, described below.
 
 ### Convention Registration via `zarr_conventions`
 
-The version of this specification is indicated via the `version` key within the `zarr_conventions` object.
+The `zarr_conventions` attribute MUST be an array of convention metadata objects. Each object in the array describes one convention that applies to the node.
 
-Each convention is uniquely identified by a [UUID](https://www.rfc-editor.org/rfc/rfc9562.html).
-When creating a new convention, the creator MUST use the [UUID4 function](https://www.rfc-editor.org/rfc/rfc9562.html#name-uuid-version-4) to generate a unique identifier for their convention.
+Each convention metadata object MUST contain at least one of the following fields:
+ - `schema` - a URL which resolves to a JSON schema document which describes the convention's properties.
+ - `spec` - a URL which resolves to a document describing the Convention in more detail.
 
-The `zarr_conventions` object contains convention registration metadata. Each key MUST be a UUID string identifying a convention, and each value MUST be a "convention metadata object" (described below).
+At least one of `schema` or `spec` MUST be present. If both are present, the `schema` URL serves as the primary unique identifier for the convention. If only `spec` is present, it serves as the unique identifier.
 
-Once created, the convention's UUID MUST NOT change.
-(Evolution of the convention instead is managed via `version`, described below.)
+Additionally, a convention metadata object SHOULD contain the following field:
+- `name` - a short human-readable name used to represent the Convention in contexts where such a name is desirable (e.g websites). The name MUST NOT be used by tools to identify the Convention (use the `schema` or `spec` URL instead). Names are not guaranteed to be unique across Conventions. If `name` is not present, tools SHOULD use the identifier URL instead to represent the Convention.
 
-Each convention metadata object MUST contain the following field:
- - `version` - a semver-compatible string indicating the version of the convention. New conventions should adopt `0.1.0` as their starting version number.
-
-Additionally, a convention metadata object SHOULD contain the following fields:
-- `name` - a short human-readable name used to represent the Convention in contexts where such a name is desirable (e.g websites). The name MUST NOT be used by tools to identify the Convention (use the UUID instead). Names are not guaranteed to be unique across Conventions. If `name` is not present, tools SHOULD use the UUID instead to represent the Convention.
-- `schema` - a URL which resolves to a JSON schema document which describes the convention's properties.
-
-The convention metadata object MAY contain the following fields:
-- `spec` - a URL which resolves to a document describing the Convention in more detail.
+The convention metadata object MAY contain the following field:
 - `description` - a concise description of the convention.
 
-The convention metadata object MUST NOT contain additional fields.
+The convention metadata object MUST NOT contain additional fields beyond those specified above.
+
+#### Convention Identity and Versioning
+
+Conventions are uniquely identified by their identifier URL, which is either the `schema` URL (if present) or the `spec` URL. If both are present, the `schema` URL takes precedence as the primary identifier.
+
+The identifier URL MAY include version information (e.g., via git tags or versioned paths) to allow conventions to evolve over time.
+
+When a convention evolves:
+- Breaking changes SHOULD result in a new identifier URL (e.g., incrementing the major version in the URL path)
+- Non-breaking changes MAY update the schema/spec at the same URL or use a new URL (e.g., incrementing the minor version)
+
+Tools consuming conventions SHOULD use the identifier URL to determine which convention is being used and which version of that convention applies.
 
 ### Convention Properties
 
@@ -100,17 +105,34 @@ If a convention wants to allow other conventions to extend its objects, its sche
 
 ## Examples
 
-Minimum conformant Convention.
+Minimum conformant Convention (with schema):
 
 ```json
 {
+    "zarr_format": 3,
+    "node_type": "array",
     "attributes": {
-        "zarr_conventions": {
-            "version": "1..0",
-            "0396f4cd-47fa-4b09-8c79-9072d90ceed3": {
-                "version": "0.1.0"
+        "zarr_conventions": [
+            {
+                "schema": "https://example.com/my-convention/v0.1.0/schema.json"
             }
-        }
+        ]
+    }
+}
+```
+
+Minimum conformant Convention (with spec only):
+
+```json
+{
+    "zarr_format": 3,
+    "node_type": "array",
+    "attributes": {
+        "zarr_conventions": [
+            {
+                "spec": "https://example.com/my-convention/v0.1.0/README.md"
+            }
+        ]
     }
 }
 ```
@@ -119,17 +141,17 @@ More complete example with projection information:
 
 ```json
 {
+    "zarr_format": 3,
+    "node_type": "array",
     "attributes": {
-        "zarr_conventions": {
-            "version": "1.0.0",
-            "f17cb550-5864-4468-aeb7-f3180cfb622f": {
-                "version": "0.1.0",
+        "zarr_conventions": [
+            {
                 "schema": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
                 "name": "proj:",
                 "description": "Coordinate reference system information for geospatial data",
                 "spec": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
             }
-        },
+        ],
         "proj:code": "EPSG:4326",
         "proj:transform": [1.0, 0.0, 0.0, 0.0, -1.0, 90.0]
     }
@@ -140,24 +162,23 @@ Example demonstrating composability with multiscales and projection:
 
 ```json
 {
+    "zarr_format": 3,
+    "node_type": "group",
     "attributes": {
-        "zarr_conventions": {
-            "version": "1.0.0",
-            "d35379db-88df-4056-af3a-620245f8e347": {
-                "version": "0.1.0",
+        "zarr_conventions": [
+            {
                 "schema": "https://raw.githubusercontent.com/zarr-experimental/multiscales/refs/tags/v0.1.0/schema.json",
                 "name": "multiscales",
                 "description": "Multiscale layout of zarr datasets",
                 "spec": "https://github.com/zarr-experimental/multiscales/blob/v0.1.0/README.md"
             },
-            "f17cb550-5864-4468-aeb7-f3180cfb622f": {
-                "version": "0.1.0",
+            {
                 "schema": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
                 "name": "proj:",
                 "description": "Coordinate reference system information for geospatial data",
                 "spec": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
             }
-        },
+        ],
         "multiscales": {
             "layout": [
                 {
@@ -197,10 +218,10 @@ The lessons learned from this may be applied to the more formal Extensions frame
 
 # FAQ
 
-- Why isn't `zarr_conventions_metadata` a top-level metadata key?
+- Why isn't `zarr_conventions` a top-level metadata key?
   - Creating a new top-level key would require a new extension point in Zarr, which in turn requires a lengthy ZEP process. 
-  - By putting `zarr_conventions_metadata` in attributes, we affirm that it is outside of the purview of the Zarr spec itself; these conventions are purely "user" metadata.
-  - Once the `zarr_conventions_metadata` mechanism has matured, we may attempt to promote it to a top-level metadata key in the future.
+  - By putting `zarr_conventions` in attributes, we affirm that it is outside of the purview of the Zarr spec itself; these conventions are purely "adopter" metadata.
+  - Once the `zarr_conventions` mechanism has matured, we may attempt to promote it to a top-level metadata key in the future.
 
 - How should we handle pre-existing "implicit conventions" like [ome-zarr](https://ome-zarr.readthedocs.io/en/stable/) or Xarray's `_FillValue` encoding?
   - Our goal here is to create a robust conventions mechanism that will serve the community for many years to come. That is incompatible with also supporting implicit conventions.
@@ -211,42 +232,43 @@ The lessons learned from this may be applied to the more formal Extensions frame
   - In the future, we may create a website similar to [STAC extensions](https://stac-extensions.github.io/).
 
 - What if you don't want a convention to be discoverable?
-  - This mechanism supports "opaque" conventions. It is not required to publish a schema or a spec. A convention is identified by a UUID.
+  - Given that the URL should be resolvable, this spec does not support opaque conventions.
  
-- Do Zarr implementations need to understand `zarr_conventions_metadata`?
-  - No; by definitinion, conventions cannot modify core Zarr behavior (this requires extensions). They sit purely "on top" of the Zarr data model.
+- Do Zarr implementations need to understand `zarr_conventions`?
+  - No; by definition, conventions cannot modify core Zarr behavior (this requires extensions). They sit purely "on top" of the Zarr data model.
   - That said, implementations may choose to interpret the conventions and implement related features. 
   - Or this can be left to higher-level libraries sitting on top of the Zarr implementation (e.g. Xarray.)
 
 - Can conventions be used for arrays or groups?
   - They can be used for either or both.
 
-- Why is version required?
-  - UUIDs are version-independent; version provides a way for conventions to evole and implementations to track that evolution.
+- Why is schema or spec required?
+  - At least one URL is required to serve as the unique identifier for the convention. The schema URL provides validation capabilities, while the spec URL provides human-readable documentation. Having at least one ensures conventions are both identifiable and discoverable.
 
-- Do I need to change my UUID when I change the schema?
-  - No, UUIDs should be permanent
+- Should I provide both schema and spec?
+  - It's recommended to provide both when possible. The schema enables validation and tooling support, while the spec provides human-readable documentation. If you can only provide one, choose based on your use case: schema for machine validation, spec for human consumption.
 
-- Why is schema recommended?
-  - It provides a way to validate your convention
-  
-- Why is schema not required?
-  - In order to support conventions that are designed to be private and therefore do not have a publicly resolvable schema.
+- How do I version my convention?
+  - Include version information in your convention's metadata or the schema or spec URL (e.g., using git tags like `/v0.1.0/` or versioned paths). When you make breaking changes, update to a new major version in the URL.
 
 - Why is name recommended?
-  - We use it to populate the website showing all conventions; tools also use it for nice metadata representations.
+  - We will use the name to populate the website showing all conventions; tools also will use it for nice metadata representations.
 
 - Why is name not required?
-  - Name should only be used for human-oriented displays, it isn't required because it isn't strictly necessary for a convention to b useful.
+  - Name should only be used for human-oriented displays, it isn't required because it isn't strictly necessary for a convention to be useful.
 
-- Why do you use a UUID for the key?
-    - It provides a decentralized version for guaranteed uniqueness
+
+- Why use schema or spec URLs instead of UUIDs for identification?
+  - URLs provide a mechanism for both identification and discovery, simplifying the specification. Schema URLs enable validation, while spec URLs point to documentation. Both naturally encode version information and provide a discoverable path to more information. While this requires conventions to maintain stable URLs, this is consistent with common practices in web standards.
 
 - How does this specification enable composability?
-  - Convention properties exist at the root `attributes` level (not isolated in `configuration` fields), allowing conventions to reference and extend properties from other conventions. This mirrors the proven pattern used by STAC extensions. For example, a projection convention can add projection-specific properties to items within a multiscales layout.
+  - Convention properties exist at the root `attributes` level (not isolated in the `zarr_conventions` array), allowing conventions to reference and extend properties from other conventions. This mirrors the proven pattern used by STAC extensions. For example, a projection convention can add projection-specific properties to items within a multiscales layout.
   
 - How are property name collisions prevented?
   - Conventions use namespace prefixes (e.g., `proj:`, `ome:`) to prevent collisions. This approach has been successfully used by the STAC community for years without collision issues. Convention authors coordinate on naming within their domain.
+
+- What if my schema or spec URL becomes unavailable?
+  - Convention authors should use stable hosting for URLs (e.g., GitHub releases, permanent DOIs). Tools consuming conventions should implement caching strategies and graceful degradation when URLs are temporarily unavailable. The convention properties remain valid even if the identifier URL is unreachable. Convention authors may register a new convention conveying similar information if an identifying URL is irreconcilably lost, and should coordinate with downstream libraries about the change.
 
 # Implementations
 
