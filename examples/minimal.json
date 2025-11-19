@@ -2,11 +2,10 @@
   "zarr_format": 3,
   "node_type": "array",
   "attributes": {
-    "zarr_conventions": {
-      "version": "0.1.0",
-      "0396f4cd-47fa-4b09-8c79-9072d90ceed3": {
-        "version": "0.1.0"
+    "zarr_conventions": [
+      {
+        "spec_url": "https://example.com/my-convention/v0.1.0/README.md"
       }
-    }
+    ]
   }
 }
