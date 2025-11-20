@@ -2,13 +2,13 @@
 
 ## Basics
 
-- Why isn't `zarr_conventions` a top-level metadata key?
+- Why isn't `zarr_conventions` a new key in core Zarr metadata (i.e., outside of `attributes`)?
   - Creating a new top-level key would require a new extension point in Zarr, which in turn requires a lengthy ZEP process. 
   - By putting `zarr_conventions` in attributes, we affirm that it is outside of the purview of the Zarr spec itself; these conventions are purely "user" metadata.
   - Once the `zarr_conventions` mechanism has matured, we may attempt to promote it to a top-level metadata key in the future.
 
 - What's the difference between a Zarr convention and a Zarr extension?
-  - Conventions use only the `attributes` field and are safely ignorable by Zarr implementations. They are interpreted by downstream, domain-specific software. The data remains fully readable and usable even without understanding the convention, though domain-specific context may be missing.
+  - Conventions use only the `attributes` field and can be safely ignored by Zarr implementations. The readers of conventions are domain-specific tools that add semantics on top of the core Zarr model. The underlying Zarr data model remains fully readable and usable even without understanding the convention, though domain-specific context may be missing.
   - Extensions modify core Zarr behavior and require implementation support. They connect to defined extension points in the spec (data types, chunk grids, codecs, chunk key encoding, storage transformers) and may change how data is encoded or stored.
   - A good rule of thumb: if the data would be completely meaningless or unintelligible without supporting it, it should be an extension rather than a convention.
 
@@ -54,19 +54,19 @@
   
 ## Convention Identification and Metadata
 
-- Why is schema_url or spec_url required?
+- Why is one of the `schema_url` and `spec_url` fields required?
   - At least one URL is required to serve as the unique identifier for the convention. The schema_url provides validation capabilities, while the spec_url provides human-readable documentation. Having at least one ensures conventions are both identifiable and discoverable.
 
-- Should I provide both schema_url and spec_url?
+- Should I provide _both_ `schema_url` and `spec_url`?
   - It's recommended to provide both when possible. The schema_url enables validation and tooling support, while the spec_url provides human-readable documentation. If you can only provide one, choose based on your use case: schema_url for machine validation, spec_url for human consumption.
 
 - Why use schema_url or spec_url instead of UUIDs for identification?
   - URLs provide a mechanism for both identification and discovery, simplifying the specification. Schema URLs enable validation, while spec URLs point to documentation. Both naturally encode version information and provide a discoverable path to more information. While this requires conventions to maintain stable URLs, this is consistent with common practices in web standards.
 
-- Why is name recommended?
+- Why is the `name` field recommended?
   - We will use the name to populate the website showing all conventions; tools also will use it for nice metadata representations.
 
-- Why is name not required?
+- Why is the `name` field not required?
   - Name should only be used for human-oriented displays, it isn't required because it isn't strictly necessary for a convention to be useful.
 
 ## Multiple Conventions and Composability
@@ -109,7 +109,7 @@
 
 ## Discovery and Governance
 
-- What is the mechanisms for discovery of conventions?
+- What is the mechanism for discovery of conventions?
   - The `zarr-conventions` repository provides an [optional](https://github.com/zarr-conventions#share-your-convention) central place for the community to maintain and discover conventions. The [`zarr-conventions/template`](https://github.com/zarr-conventions/template) repo makes it easy to author new conventions. 
   - In the future, we may create a website similar to [STAC extensions](https://stac-extensions.github.io/).
 
