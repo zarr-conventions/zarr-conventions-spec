@@ -7,7 +7,7 @@
   - By putting `zarr_conventions` in attributes, we affirm that it is outside of the purview of the Zarr spec itself; these conventions are purely "user" metadata.
   - Once the `zarr_conventions` mechanism has matured, we may attempt to promote it to a top-level metadata key in the future.
 
-- What's the difference between a Zarr convention and a Zarr extension?
+- What's the difference between a Zarr _convention_ and a Zarr _extension_?
   - Conventions use only the `attributes` field and can be safely ignored by Zarr implementations. The readers of conventions are domain-specific tools that add semantics on top of the core Zarr model. The underlying Zarr data model remains fully readable and usable even without understanding the convention, though domain-specific context may be missing.
   - Extensions modify core Zarr behavior and require implementation support. They connect to defined extension points in the spec (data types, chunk grids, codecs, chunk key encoding, storage transformers) and may change how data is encoded or stored.
   - A good rule of thumb: if the data would be completely meaningless or unintelligible without supporting it, it should be an extension rather than a convention.
