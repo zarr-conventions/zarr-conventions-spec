@@ -120,6 +120,9 @@ Enable the Zarr community to rapidly innovate and share domain-specific conventi
 - [ ] Work with library maintainers to add convention support:
   - [ ] Xarray
   - [ ] GDAL
+  - [ ] rioxarray
+  - [ ] zarrita.js
+  - [ ] openlayers
   - [ ] zarr-python
   - [ ] tensorstore
   - [ ] OME tools
