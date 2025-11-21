@@ -45,7 +45,7 @@ Each convention metadata object MUST contain at least one of the following field
  - `schema_url` - a URL which resolves to a JSON schema document which describes the convention's properties.
  - `spec_url` - a URL which resolves to a document describing the Convention in more detail.
 
-At least one of `schema_url` or `spec_url` MUST be present. If both are present, the `schema_url` serves as the primary unique identifier for the convention. If only `spec_url` is present, it serves as the unique identifier.
+At least one of `schema_url` or `spec_url` MUST be present. If both are present, the `schema_url` serves as the primary unique identifier for the convention. If only `spec_url` is present, it serves as the unique identifier. If the convention uses versioning, the `schema_url` SHOULD include a reference to the specific version (e.g., `v1`) and the `spec_url` MAY include a reference to the specific version. The convention SHOULD provide a convenient way to find the specification associated with each version.
 
 Additionally, a convention metadata object SHOULD contain the following field:
 - `name` - a short human-readable name used to represent the Convention in contexts where such a name is desirable (e.g., websites). The name MUST NOT be used by tools to identify the Convention (use the `schema_url` or `spec_url` instead). Names are not guaranteed to be unique across Conventions. If `name` is not present, tools SHOULD use the identifier URL instead to represent the Convention. If the convention isolates metadata using [a namespace prefix or a key for nesting](#namespace-prefixes), the name SHOULD match the namespace prefix (e.g., `proj:`) or the key used to nest attributes (e.g., `ome`), depending on which method is used. When using namespace prefixing (in contrast to nesting), it is RECOMMENDED to include the colon in the name (e.g., `proj:` rather than `proj`) to clearly indicate the prefixing approach.
@@ -55,17 +55,13 @@ The convention metadata object MAY contain the following field:
 
 The convention metadata object MUST NOT contain additional fields beyond those specified above.
 
-#### Convention Identity and Versioning
+#### Convention Identity
 
 Conventions are uniquely identified by their identifier URL, which is either the `schema_url` (if present) or the `spec_url`. If both are present, the `schema_url` takes precedence as the primary identifier.
 
-The identifier URL MAY include version information (e.g., via git tags or versioned paths) to allow conventions to evolve over time.
+#### Versioning
 
-When a convention evolves:
-- Breaking changes SHOULD result in a new identifier URL (e.g., incrementing the major version in the URL path)
-- Non-breaking changes MAY update the schema_url/spec_url at the same URL or use a new URL (e.g., incrementing the minor version)
-
-Tools consuming conventions SHOULD use the identifier URL to determine which convention is being used and which version of that convention applies.
+It is RECOMMENDED that conventions use a versioning scheme to allow evolution over time. Versioned conventions SHOULD include the version information in the `schema_url` (e.g., `https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v1/schema.json"` to facilitate validation of specific versions. Versioned conventions MAY also include the version in the convention metadata (`e.g., {'proj:version': "1"}`) for convenient version identification without url parsing. If a convention uses versioning, it MUST clearly define the semantic meaning of version numbers in its specification.
 
 ### Convention Properties
 
@@ -114,7 +110,7 @@ Minimum conformant Convention (with schema_url):
     "attributes": {
         "zarr_conventions": [
             {
-                "schema_url": "https://example.com/my-convention/v0.1.0/schema.json"
+                "schema_url": "https://example.com/my-convention/v1/schema.json"
             }
         ]
     }
@@ -130,7 +126,7 @@ Minimum conformant Convention (with spec_url only):
     "attributes": {
         "zarr_conventions": [
             {
-                "spec_url": "https://example.com/my-convention/v0.1.0/README.md"
+                "spec_url": "https://example.com/my-convention/v1/README.md"
             }
         ]
     }
@@ -146,10 +142,10 @@ More complete example with projection information:
     "attributes": {
         "zarr_conventions": [
             {
-                "schema_url": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
+                "schema_url": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v1/schema.json",
                 "name": "proj:",
                 "description": "Coordinate reference system information for geospatial data",
-                "spec_url": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
+                "spec_url": "https://github.com/zarr-experimental/geo-proj/blob/v1/README.md"
             }
         ],
         "proj:code": "EPSG:4326",
@@ -167,16 +163,16 @@ Example demonstrating composability with multiscales and projection:
     "attributes": {
         "zarr_conventions": [
             {
-                "schema_url": "https://raw.githubusercontent.com/zarr-experimental/multiscales/refs/tags/v0.1.0/schema.json",
+                "schema_url": "https://raw.githubusercontent.com/zarr-experimental/multiscales/refs/tags/v1/schema.json",
                 "name": "multiscales",
                 "description": "Multiscale layout of zarr datasets",
-                "spec_url": "https://github.com/zarr-experimental/multiscales/blob/v0.1.0/README.md"
+                "spec_url": "https://github.com/zarr-experimental/multiscales/blob/v1/README.md"
             },
             {
-                "schema_url": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v0.1.0/schema.json",
+                "schema_url": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v1/schema.json",
                 "name": "proj:",
                 "description": "Coordinate reference system information for geospatial data",
-                "spec_url": "https://github.com/zarr-experimental/geo-proj/blob/v0.1.0/README.md"
+                "spec_url": "https://github.com/zarr-experimental/geo-proj/blob/v1/README.md"
             }
         ],
         "multiscales": {

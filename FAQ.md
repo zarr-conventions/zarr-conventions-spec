@@ -91,13 +91,33 @@
 ## Versioning and Changes
 
 - How do I version my convention?
-  - Include version information in your convention's metadata or the schema or spec URL (e.g., using git tags like `/v0.1.0/` or versioned paths). When you make breaking changes, update to a new major version in the URL.
+  - The Zarr conventions framework does not require versioning or prescribe semantics for versioning schemes. However, if you choose to version your convention, it is RECOMMENDED to:
+    - Include version information in the identifier URL (e.g., using git tags like `/v1/` or versioned paths like `/v1.0.0/`)
+    - Define a version field within your convention's attributes (e.g., `proj:version`) so libraries don't need to parse the URL
+    - Clearly document the semantic meaning of your version numbers in your convention specification
+  - If using semantic versioning or similar schemes, consider whether you need MAJOR.MINOR.PATCH granularity or if MAJOR versions alone (v1, v2, etc.) would suffice for your use case.
+  - If using semantic versioning or similar schemes, consider whether you need the version in the convention's attributes (e.g., `proj:version`) so libraries don't need to parse the URL or whether you need a single source of truth for the version via the URL
 
 - What happens if a convention needs to make breaking changes?
-  - Convention versioning should be included in the identifier URL. When making breaking changes, create a new URL with a new major version (e.g., change `/v1.0.0/` to `/v2.0.0/`).
-  - Document the breaking changes in your convention's changelog. The old version remains valid - existing data doesn't break.
-  - Tools can support multiple versions simultaneously. Consider providing migration guidance in your documentation.
-  - Non-breaking changes (adding optional fields, fixing typos in documentation) can be released as minor or patch versions at the same URL or with updated version numbers, depending on your convention's versioning policy.
+  - If your convention uses versioning, breaking changes SHOULD result in a new identifier URL with an updated major version (e.g., change `/v1/` to `/v2/`).
+  - Document the breaking changes in your convention's changelog and provide migration guidance.
+  - The old version remains valid - existing data doesn't break. Tools can support multiple versions simultaneously.
+  - If you don't use versioning, you can use a new identifier URL (effectively a new convention UUID) for incompatible changes, or extend your schema to handle both old and new structures where possible.
+
+- Do I need to use version numbers in my convention?
+  - No. Version numbers are optional. JSON schemas can often be extended in backwards-compatible ways without explicit versioning:
+    - Adding optional fields doesn't break old data
+    - Old implementations can fail gracefully on unknown fields
+    - New implementations can support both old and new structures
+  - However, versioning can be useful when:
+    - You need to track non-structural changes (e.g., how a field should be interpreted)
+    - You want to explicitly communicate compatibility expectations
+    - Your convention follows an established versioning practice in your domain
+  - If you do use version numbers, define clear rules for what different versions mean (breaking vs. non-breaking changes).
+
+- What if the version in the URL and a version field in my convention metadata disagree?
+  - If you include version information in both places, you MUST ensure they stay synchronized. Define in your convention specification which takes precedence if they disagree (typically the URL).
+  - Consider whether you need version information in both places - having it only in the URL may be simpler and less error-prone.
 
 - Can a convention be deprecated or retired?
   - Yes, but carefully: document the deprecation clearly in your convention's documentation, provide migration guidance to a replacement convention (if any), and consider keeping the URLs available even for deprecated conventions so existing data remains interpretable.

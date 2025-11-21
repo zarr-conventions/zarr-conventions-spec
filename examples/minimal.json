@@ -4,7 +4,7 @@
   "attributes": {
     "zarr_conventions": [
       {
-        "spec_url": "https://example.com/my-convention/v0.1.0/README.md"
+        "spec_url": "https://example.com/my-convention/v1/README.md"
       }
     ]
   }
