@@ -48,7 +48,7 @@ Each convention metadata object MUST contain at least one of the following field
 At least one of `schema_url` or `spec_url` MUST be present. If both are present, the `schema_url` serves as the primary unique identifier for the convention. If only `spec_url` is present, it serves as the unique identifier.
 
 Additionally, a convention metadata object SHOULD contain the following field:
-- `name` - a short human-readable name used to represent the Convention in contexts where such a name is desirable (e.g websites). The name MUST NOT be used by tools to identify the Convention (use the `schema_url` or `spec_url` instead). Names are not guaranteed to be unique across Conventions. If `name` is not present, tools SHOULD use the identifier URL instead to represent the Convention. 
+- `name` - a short human-readable name used to represent the Convention in contexts where such a name is desirable (e.g., websites). The name MUST NOT be used by tools to identify the Convention (use the `schema_url` or `spec_url` instead). Names are not guaranteed to be unique across Conventions. If `name` is not present, tools SHOULD use the identifier URL instead to represent the Convention. If the convention isolates metadata using [a namespace prefix or a key for nesting](#namespace-prefixes), the name SHOULD match the namespace prefix (e.g., `proj:`) or the key used to nest attributes (e.g., `ome`), depending on which method is used. When using namespace prefixing (in contrast to nesting), it is RECOMMENDED to include the colon in the name (e.g., `proj:` rather than `proj`) to clearly indicate the prefixing approach.
 
 The convention metadata object MAY contain the following field:
 - `description` - a concise description of the convention.
