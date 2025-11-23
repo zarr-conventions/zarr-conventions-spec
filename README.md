@@ -44,11 +44,13 @@ The `zarr_conventions` attribute MUST be an array of convention metadata objects
 Each convention metadata object MUST contain at least one of the following fields:
  - `schema_url` - a URL which resolves to a JSON schema document which describes the convention's properties.
  - `spec_url` - a URL which resolves to a document describing the Convention in more detail.
+ - `uuid` - a UUID (Universally Unique Identifier) that permanently identifies the convention, independent of URL changes.
 
-At least one of `schema_url` or `spec_url` MUST be present. If both are present, the `schema_url` serves as the primary unique identifier for the convention. If only `spec_url` is present, it serves as the unique identifier. If the convention uses versioning, the `schema_url` SHOULD include a reference to the specific version (e.g., `v1`) and the `spec_url` MAY include a reference to the specific version. The convention SHOULD provide a convenient way to find the specification associated with each version.
+At least one of `schema_url`, `spec_url`, or `uuid` MUST be present. If `uuid` is present, it serves as the primary unique identifier for the convention. If `uuid` is not present and both `schema_url` and `spec_url` are present, the `schema_url` serves as the identifier. If only `spec_url` is present (and no `uuid`), it serves as the identifier. If the convention uses versioning, the `schema_url` SHOULD include a reference to the specific version (e.g., `v1`) and the `spec_url` MAY include a reference to the specific version. The convention SHOULD provide a convenient way to find the specification associated with each version.
 
-Additionally, a convention metadata object SHOULD contain the following field:
-- `name` - a short human-readable name used to represent the Convention in contexts where such a name is desirable (e.g., websites). The name MUST NOT be used by tools to identify the Convention (use the `schema_url` or `spec_url` instead). Names are not guaranteed to be unique across Conventions. If `name` is not present, tools SHOULD use the identifier URL instead to represent the Convention. If the convention isolates metadata using [a namespace prefix or a key for nesting](#namespace-prefixes), the name SHOULD match the namespace prefix (e.g., `proj:`) or the key used to nest attributes (e.g., `ome`), depending on which method is used. When using namespace prefixing (in contrast to nesting), it is RECOMMENDED to include the colon in the name (e.g., `proj:` rather than `proj`) to clearly indicate the prefixing approach.
+Additionally, a convention metadata object SHOULD contain the following fields:
+- `name` - a short human-readable name used to represent the Convention in contexts where such a name is desirable (e.g., websites). The name MUST NOT be used by tools to identify the Convention (use the `uuid`, `schema_url`, or `spec_url` instead). Names are not guaranteed to be unique across Conventions. If `name` is not present, tools SHOULD use the identifier (UUID or URL) instead to represent the Convention. If the convention isolates metadata using [a namespace prefix or a key for nesting](#namespace-prefixes), the name SHOULD match the namespace prefix (e.g., `proj:`) or the key used to nest attributes (e.g., `ome`), depending on which method is used. When using namespace prefixing (in contrast to nesting), it is RECOMMENDED to include the colon in the name (e.g., `proj:` rather than `proj`) to clearly indicate the prefixing approach.
+- `schema_url` and `spec_url` - when using `uuid` as the primary identifier, it is RECOMMENDED to also provide `schema_url` and/or `spec_url` for validation and documentation purposes.
 
 The convention metadata object MAY contain the following field:
 - `description` - a concise description of the convention.
@@ -57,7 +59,12 @@ The convention metadata object MUST NOT contain additional fields beyond those s
 
 #### Convention Identity
 
-Conventions are uniquely identified by their identifier URL, which is either the `schema_url` (if present) or the `spec_url`. If both are present, the `schema_url` takes precedence as the primary identifier.
+Conventions are uniquely identified by one of the following, in order of precedence:
+1. `uuid` (if present) - provides a permanent, immutable identifier independent of URL changes
+2. `schema_url` (if present and no `uuid`) - enables validation and serves as identifier
+3. `spec_url` (if no `uuid` or `schema_url`) - provides human-readable documentation and serves as identifier
+
+The `uuid` provides the most stable identification since it remains constant even if the convention's hosting location or URLs change. When using a `uuid`, it is RECOMMENDED to also provide `schema_url` and/or `spec_url` for validation and documentation.
 
 #### Versioning
 

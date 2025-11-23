@@ -36,6 +36,11 @@
           "format": "uri",
           "description": "A URL which resolves to a document describing the Convention in more detail"
         },
+        "uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "description": "A UUID (Universally Unique Identifier) that permanently identifies the convention"
+        },
         "name": {
           "type": "string",
           "description": "A short human-readable name used to represent the Convention"
@@ -51,6 +56,9 @@
         },
         {
           "required": ["spec_url"]
+        },
+        {
+          "required": ["uuid"]
         }
       ],
       "additionalProperties": false

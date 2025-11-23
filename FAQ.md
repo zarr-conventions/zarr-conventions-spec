@@ -60,8 +60,47 @@
 - Should I provide _both_ `schema_url` and `spec_url`?
   - It's recommended to provide both when possible. The schema_url enables validation and tooling support, while the spec_url provides human-readable documentation. If you can only provide one, choose based on your use case: schema_url for machine validation, spec_url for human consumption.
 
-- Why use schema_url or spec_url instead of UUIDs for identification?
-  - URLs provide a mechanism for both identification and discovery, simplifying the specification. Schema URLs enable validation, while spec URLs point to documentation. Both naturally encode version information and provide a discoverable path to more information. While this requires conventions to maintain stable URLs, this is consistent with common practices in web standards.
+- When should I use UUID, schema_url, or spec_url for identification?
+  - It is RECOMMENDED to use both a UUID and schema_url/spec_url together for maximum robustness:
+    - `uuid` provides a permanent, immutable identifier that never changes, even if hosting locations change
+    - `schema_url` enables validation and provides a way to fetch the schema for automated tooling
+    - `spec_url` provides human-readable documentation
+  - Using all three together combines the stability of UUIDs with the practical benefits of URL-based discovery and validation.
+  - If you only provide URLs (no UUID), your convention is still valid but may be harder to track if the hosting location changes.
+
+- Does UUID or schema_url take precedence as the primary identifier?
+  - UUID takes precedence over all other identifiers when present. The identifier priority order is:
+    1. `uuid` (if present) - permanent, immutable identifier
+    2. `schema_url` (if present and no uuid) - enables validation
+    3. `spec_url` (if no uuid or schema_url) - provides documentation
+  - UUIDs are immutable identifiers of a convention and remain constant even if schema_url, spec_url, or name changes.
+
+- If UUID is used as the identifier, are schema_url and spec_url recommended?
+  - Yes, it is RECOMMENDED to provide both `schema_url` and/or `spec_url` alongside the UUID:
+    - `schema_url` enables automated validation and tooling support
+    - `spec_url` provides human-readable documentation for developers
+    - The UUID provides stability while the URLs provide practical functionality
+  - This combination gives you the best of both worlds: permanent identification via UUID and practical utility via URLs.
+
+- How do I register my UUID?
+  - In the future, you may register your UUID with convention registries by making pull requests to registries of interest (e.g., organization-specific registries or community registries).
+  - However, registration is not required - UUIDs are designed to be unique without central coordination.
+  - The main purpose of registries is information dissemination and convenience, not central authority.
+
+- Who assigns a UUID to my convention?
+  - You, as the convention author, assign the UUID yourself. No central authority is required to assign a UUID.
+  - To generate a UUID and assign it to your convention, execute the following in Python:
+    ```python
+    import uuid
+    uuid_for_my_convention = uuid.uuid4()
+    print(uuid_for_my_convention)
+    ```
+  - Once assigned, a UUID should never change. The UUID permanently identifies your convention regardless of name changes, URL changes, or hosting location changes.
+
+- What type of UUID should be used?
+  - UUID v4 (a random 128-bit number) is RECOMMENDED if there are no other considerations.
+  - Any type of UUID is acceptable, but UUID v4 is the simplest and most commonly used.
+  - UUIDs must conform to [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562.html).
 
 - Why is the `name` field recommended?
   - We will use the name to populate the website showing all conventions; tools also will use it for nice metadata representations.
@@ -178,6 +217,16 @@
   - Generic Zarr tools may eventually provide convention validation features, but this is optional. Domain-specific libraries often have built-in validation for their conventions.
   - The `schema_url` makes it possible for generic tooling to validate conventions it wasn't specifically built for.
 
+- When should schema validation occur?
+  - Schema validation can occur at different points in the data lifecycle, based on lessons from STAC:
+  - **Data providers** almost always validate their metadata against all convention schemas before publishing. This ensures data quality at the source.
+  - **Ingestion pipelines** usually validate before adding data to databases or catalogs. This provides a consistency check and catches issues early.
+  - **Consumers** often use validation for debugging when data doesn't work as expected. If a tool breaks, validating against the convention schemas is a good first debugging step to identify specification violations.
+  - **UIs and tools** may use schema URLs to add functionality dynamically (e.g., a UI might detect a `proj` convention and add a "Projection" section).
+  - Validation is typically an explicit operation (not automatic) since it may require network calls to fetch schemas.
+  - Readers are NOT expected to validate on every read - the schema_url is provided for optional validation when needed.
+  - Writers should ensure their output conforms to the schema, but are not required to perform validation using the schema_url itself (though it can be useful for testing).
+
 - Should I use prefixes (like `proj:code`) or nesting (like `{"proj": {"code": "..."}}`) for my convention?
   - Both approaches work, and the choice depends on your use case.
   - Prefix style (`proj:code`): flatter structure and easier to access, works well for conventions that extend others, similar to STAC approach, but requires consistent prefix usage.
@@ -204,4 +253,3 @@
 - Can I create a convention for internal use within my organization without making it public?
   - While you technically can, this specification encourages resolvable URLs for discovery and interoperability. However, you could use internal URLs accessible only within your organization, document a convention privately before making it public, or use a publicly resolvable URL even for niche conventions.
   - The main consideration: if others might ever need to read your data, making the convention discoverable helps them understand it. Even internal conventions benefit from documentation.
-
