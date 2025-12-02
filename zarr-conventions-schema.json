@@ -9,22 +9,11 @@
       "type": "object",
       "properties": {
         "zarr_conventions": {
-          "type": "object",
-          "properties": {
-            "version": {
-              "type": "string",
-              "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-              "description": "A semver-compatible string indicating the version of the Zarr conventions specification"
-            }
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/conventionMetadataObject"
           },
-          "patternProperties": {
-            "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$": {
-              "$ref": "#/$defs/conventionMetadataObject"
-            }
-          },
-          "required": ["version"],
-          "additionalProperties": false,
-          "description": "Object containing a version field and convention metadata, keyed by UUID4 strings"
+          "description": "Array of convention metadata objects describing conventions that apply to this node"
         }
       },
       "required": ["zarr_conventions"],
@@ -37,31 +26,41 @@
     "conventionMetadataObject": {
       "type": "object",
       "properties": {
-        "version": {
-          "type": "string",
-          "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-          "description": "A semver-compatible string indicating the version of the convention"
-        },
-        "name": {
-          "type": "string",
-          "description": "A short human-readable name used to represent the Convention"
-        },
-        "schema": {
+        "schema_url": {
           "type": "string",
           "format": "uri",
           "description": "A URL which resolves to a JSON schema document describing the convention's properties"
         },
-        "spec": {
+        "spec_url": {
           "type": "string",
           "format": "uri",
           "description": "A URL which resolves to a document describing the Convention in more detail"
+        },
+        "uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "description": "A UUID (Universally Unique Identifier) that permanently identifies the convention"
+        },
+        "name": {
+          "type": "string",
+          "description": "A short human-readable name used to represent the Convention"
         },
         "description": {
           "type": "string",
           "description": "A concise description of the convention"
         }
       },
-      "required": ["version"],
+      "anyOf": [
+        {
+          "required": ["schema_url"]
+        },
+        {
+          "required": ["spec_url"]
+        },
+        {
+          "required": ["uuid"]
+        }
+      ],
       "additionalProperties": false
     }
   }
