@@ -140,6 +140,45 @@ Minimum conformant Convention (with spec_url only):
 }
 ```
 
+Minimum conformant Convention (with uuid):
+
+```json
+{
+    "zarr_format": 3,
+    "node_type": "array",
+    "attributes": {
+        "zarr_conventions": [
+            {
+                "uuid": "f17cb550-5864-4468-aeb7-f3180cfb622f"
+            }
+        ]
+    }
+}
+```
+
+Recommended Convention (with uuid plus schema_url and spec_url):
+
+```json
+{
+    "zarr_format": 3,
+    "node_type": "array",
+    "attributes": {
+        "zarr_conventions": [
+            {
+                "uuid": "f17cb550-5864-4468-aeb7-f3180cfb622f",
+                "schema_url": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v1/schema.json",
+                "spec_url": "https://github.com/zarr-experimental/geo-proj/blob/v1/README.md",
+                "name": "proj:",
+                "description": "Coordinate reference system information for geospatial data"
+            }
+        ],
+        "proj:code": "EPSG:4326",
+        "proj:spatial_dimensions": ["Y", "X"],
+        "proj:transform": [1.0, 0.0, 0.0, 0.0, -1.0, 90.0]
+    }
+}
+```
+
 More complete example with projection information:
 
 ```json
@@ -170,35 +209,45 @@ Example demonstrating composability with multiscales and projection:
     "attributes": {
         "zarr_conventions": [
             {
+                "uuid": "d35379db-88df-4056-af3a-620245f8e347",
                 "schema_url": "https://raw.githubusercontent.com/zarr-experimental/multiscales/refs/tags/v1/schema.json",
+                "spec_url": "https://github.com/zarr-experimental/multiscales/blob/v1/README.md",
                 "name": "multiscales",
-                "description": "Multiscale layout of zarr datasets",
-                "spec_url": "https://github.com/zarr-experimental/multiscales/blob/v1/README.md"
+                "description": "Multiscale layout of zarr datasets"
             },
             {
+                "uuid": "f17cb550-5864-4468-aeb7-f3180cfb622f",
                 "schema_url": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v1/schema.json",
+                "spec_url": "https://github.com/zarr-experimental/geo-proj/blob/v1/README.md",
                 "name": "proj:",
-                "description": "Coordinate reference system information for geospatial data",
-                "spec_url": "https://github.com/zarr-experimental/geo-proj/blob/v1/README.md"
+                "description": "Coordinate reference system information for geospatial data"
             }
         ],
         "multiscales": {
             "layout": [
                 {
-                    "group": "r10m",
+                    "asset": "r10m",
+                    "transform": {
+                        "scale": [1.0, 1.0],
+                        "translation": [0.0, 0.0]
+                    },
                     "proj:shape": [1200, 1200],
                     "proj:transform": [10.0, 0.0, 500000.0, 0.0, -10.0, 5000000.0]
                 },
                 {
-                    "group": "r20m",
-                    "from_group": "r10m",
-                    "scale": [2.0, 2.0],
+                    "asset": "r20m",
+                    "derived_from": "r10m",
+                    "transform": {
+                        "scale": [2.0, 2.0],
+                        "translation": [0.0, 0.0]
+                    },
                     "proj:shape": [600, 600],
                     "proj:transform": [20.0, 0.0, 500000.0, 0.0, -20.0, 5000000.0]
                 }
             ]
         },
         "proj:code": "EPSG:32633",
+        "proj:spatial_dimensions": ["Y", "X"],
         "proj:bbox": [500000.0, 4900000.0, 600000.0, 5000000.0]
     }
 }
