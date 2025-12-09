@@ -180,6 +180,30 @@ If a Convention wants to allow other conventions to extend its objects, its sche
 
 ## Examples
 
+
+Recommended Convention (with uuid plus schema_url and spec_url):
+
+```json
+{
+    "zarr_format": 3,
+    "node_type": "array",
+    "attributes": {
+        "zarr_conventions": [
+            {
+                "uuid": "f17cb550-5864-4468-aeb7-f3180cfb622f",
+                "schema_url": "https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v1/schema.json",
+                "spec_url": "https://github.com/zarr-experimental/geo-proj/blob/v1/README.md",
+                "name": "proj:",
+                "description": "Coordinate reference system information for geospatial data"
+            }
+        ],
+        "proj:code": "EPSG:4326",
+        "proj:spatial_dimensions": ["Y", "X"],
+        "proj:transform": [1.0, 0.0, 0.0, 0.0, -1.0, 90.0]
+    }
+}
+```
+
 Minimum conformant hypothetical Convention (with uuid):
 
 ```json
@@ -228,24 +252,18 @@ Minimum conformant hypothetical Convention (with spec_url only):
 }
 ```
 
-
-Recommended hypothetical Convention (with uuid plus schema_url and spec_url):
+Minimum conformant Convention (with uuid):
 
 ```json
 {
     "zarr_format": 3,
-    "node_type": "group",
+    "node_type": "array",
     "attributes": {
         "zarr_conventions": [
             {
-                "uuid": "2dc8d146-3932-4e08-8542-06aa0e826508",
-                "schema_url": "https://raw.githubusercontent.com/zarr-experimental/example/refs/tags/v1/schema.json",
-                "spec_url": "https://github.com/zarr-experimental/example/blob/v1/README.md",
-                "name": "example:",
-                "description": "Example Zarr convention metadata"
+                "uuid": "f17cb550-5864-4468-aeb7-f3180cfb622f"
             }
-        ],
-        "example:metadata": "kilometers"
+        ]
     }
 }
 ```
