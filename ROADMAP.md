@@ -16,11 +16,12 @@ Enable the Zarr community to rapidly innovate and share domain-specific conventi
 - ✅ `zarr-conventions` GitHub organization established
 - ✅ Template repository created for convention authors
 - ✅ Decision to retire `zarr-experimental` organization in favor of `zarr-conventions`
+- ✅ Coordinate with new convention developers (e.g., dggs, generic multiscales)
 
 ### In Progress
 - 🔄 Blog post draft describing the framework and design decisions
 - 🔄 Migration plan from registered attributes approach
-- 🔄 Coordination with existing convention authors (e.g., OME, CF) and new convention developers (e.g., dggs, generic multiscales)
+- 🔄 Coordination with existing convention authors (e.g., OME, CF)
 
 ---
 
@@ -30,15 +31,16 @@ Enable the Zarr community to rapidly innovate and share domain-specific conventi
 
 ### Specification Refinement
 
-- [ ] Review and incorporate community feedback from draft spec
+- [x] Review and incorporate community feedback from draft spec
 
 ### Testing with new conventions
 
-- [ ] Develop new conventions for geo:proj, multiscales, and dggs following this framework
-- [ ] Iterate on convention spec based on early adopters
+- [x] Develop new conventions for geo:proj, multiscales, and dggs following this framework
+- [x] Iterate on convention spec based on early adopters
 
 ### Community Engagement with existing conventions
 
+- [x] Publish specification via GitHub
 - [ ] Share specification on Zarr Zulip
 - [ ] Gather feedback from key stakeholders (e.g., OME, GeoZarr, Xarray, GDAL)
 - [ ] Address feedback and iterate on specification
