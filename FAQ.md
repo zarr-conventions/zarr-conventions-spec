@@ -223,6 +223,47 @@
   - When creating new versions or derivatives of the data, consider adopting explicit Convention declarations.
   - The specification is designed for forward compatibility, not retroactive application.
 
+## Backward Compatibility with Existing Conventions
+
+- Is the Zarr Conventions framework backward compatible with existing conventions like OME-Zarr?
+  - Yes, completely. The framework is designed to be fully backward compatible through additive-only changes.
+  - For OME-Zarr 0.5 specifically, which stores metadata under a single `ome` attribute key, adoption requires only adding a `zarr_conventions` array while keeping all existing `ome` metadata unchanged.
+  - The `ome` attribute structure remains completely unchanged, and existing tools continue working by looking for the `ome` attribute as before.
+
+- What about other existing conventions like `_FillValue`?
+  - The same backward compatibility principles apply. For existing data, no changes are required. For new data, add a `zarr_conventions` array while keeping all other attributes unchanged.
+  - Data using these conventions remains valid; tools can continue to detect them structurally for backward compatibility.
+  - Backwards compatibility for conventions like `_FillValue` are supported because is it only recommended, not required, that conventions use a prefix or key for namespacing.
+
+- Will my existing tools break if I add `zarr_conventions`?
+  - No. The `zarr_conventions` field is safely ignorable.
+  - Old tools that don't understand it simply ignore it and continue looking for the attributes they recognize.
+  - No functionality is broken by adding `zarr_conventions`.
+
+- What happens to data written before the conventions framework existed?
+  - Nothing. The specification explicitly states it applies only to new data.
+  - Your existing data remains valid indefinitely, can be read by all existing tools, doesn't need migration or rewriting, and can continue to be documented in the zarr-conventions organization.
+
+- How do I migrate my existing convention to use the framework?
+  - See the [Migration Guide (MIGRATION.md)](./MIGRATION.md) for detailed step-by-step instructions.
+  - The guide covers a three-phase migration strategy (Documentation → Opt-in → Enhancement), how to create specifications and JSON schemas, how to generate and register UUIDs, code examples for updating writers and readers, and convention-specific examples (OME-Zarr, Xarray, CF).
+  - Quick summary:
+    - Phase 1 (Documentation): Create spec, schema, and generate UUID if they do not already exist - no code changes
+    - Phase 2 (Opt-in): Update writers to add `zarr_conventions`, readers to optionally validate
+    - Phase 3 (Enhancement): Build better tooling using convention declarations
+  - All phases maintain full backward compatibility.
+
+- Can I use both the old structural detection AND the new conventions framework?
+  - Yes, and this is recommended during transition.
+  - Tools can check for convention declarations first, then fall back to structural detection for old data.
+  - This provides full backward compatibility with old data and enhanced functionality with new data.
+  - See [MIGRATION.md](./MIGRATION.md) for code examples and implementation patterns.
+
+- What are the benefits of migrating my convention to the framework?
+  - For convention maintainers: machine-readable validation via JSON schema, discoverability in convention registries, better composition with other conventions, and generic tools can recognize your convention.
+  - For data consumers: can verify data conforms to specification, better error messages from validation, and automatic discovery of documentation and schemas.
+  - See [MIGRATION.md](./MIGRATION.md) for the complete migration guide with detailed examples.
+
 ## Creating and Using Conventions
 
 - Should I create a new Convention or use an existing one?
