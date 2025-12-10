@@ -4,7 +4,7 @@
   "attributes": {
     "zarr_conventions": [
       {
-        "spec_url": "https://example.com/my-convention/v1/README.md"
+        "uuid": "2dc8d146-3932-4e08-8542-06aa0e826508"
       }
     ]
   }
