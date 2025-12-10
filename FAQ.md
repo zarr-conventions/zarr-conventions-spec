@@ -201,7 +201,12 @@
 - Why does this approach look similar to STAC extensions?
   - The Zarr Conventions framework is directly inspired by STAC's (SpatioTemporal Asset Catalog) highly successful extensions model. STAC moved all extensions out of the core spec in 2021 to an independent organization, and extensions are identified by URLs to their schemas.
   - In STAC, multiple extensions can compose on the same item, no central approval is needed to create an extension, and a template repository makes it easy to create new extensions.
-  - This model has proven successful in the geospatial community for years, with dozens of extensions co-existing without collision issues. The Zarr Conventions framework adapts these proven patterns to the Zarr ecosystem.
+
+- Why do Zarr conventions live in a standalone GitHub org (https://github.com/zarr-conventions/) rather than the https://github.com/zarr-developers/ org?
+  - Again, this was copied from the STAC community, with the https://github.com/stac-extensions/ 
+ org.
+  - Having a standalone org for conventions gives a central place for convention repos to be hosted in one place.
+  - The `zarr-developers` org is specifically for software under the NumFocus fiscally sponsored Zarr project. 
 
 ## Working with Existing Data
 
