@@ -119,6 +119,9 @@
 - Why is the `name` field not required?
   - Name should only be used for human-oriented displays, it isn't required because it isn't strictly necessary for a Convention to be useful.
 
+- When should I include a trailing colon (`:`) in my convention's `name`?
+  - When using namespace prefixing (in contrast to nesting), it is RECOMMENDED to include the colon in the name (e.g., `proj:` rather than `proj`) to clearly indicate the prefixing approach.
+
 ## Multiple Conventions and Composability
 
 - Can I use multiple Conventions on the same array or group?
@@ -142,17 +145,17 @@
 
 - How do I version my Convention?
   - The Zarr Conventions framework does not require versioning or prescribe semantics for versioning schemes. However, if you choose to version your Convention, it is RECOMMENDED to:
-    - Include version information in the identifier URL (e.g., using git tags like `/v1/` or versioned paths like `/v1.0.0/`)
+    - Include version information in the schema URL (e.g., using git tags like `/v1/` or versioned paths like `/v1.0.0/`)
     - Define a version field within your Convention's attributes (e.g., `proj:version`) so libraries don't need to parse the URL
     - Clearly document the semantic meaning of your version numbers in your Convention specification
   - If using semantic versioning or similar schemes, consider whether you need MAJOR.MINOR.PATCH granularity or if MAJOR versions alone (v1, v2, etc.) would suffice for your use case.
   - If using semantic versioning or similar schemes, consider whether you need the version in the Convention's attributes (e.g., `proj:version`) so libraries don't need to parse the URL or whether you need a single source of truth for the version via the URL
 
 - What happens if a Convention needs to make breaking changes?
-  - If your Convention uses versioning, breaking changes SHOULD result in a new identifier URL with an updated major version (e.g., change `/v1/` to `/v2/`).
+  - If your Convention uses versioning, breaking changes SHOULD result in a new schema URL, which would include an updated major version (e.g., change `/v1/` to `/v2/`) for versioned conventions. The semantic meaning of new versions should be clearly defined in the initial release of the convention.
   - Document the breaking changes in your Convention's changelog and provide migration guidance.
   - The old version remains valid - existing data doesn't break. Tools can support multiple versions simultaneously.
-  - If you don't use versioning, you can use a new identifier URL (effectively a new Convention UUID) for incompatible changes, or extend your schema to handle both old and new structures where possible.
+  - If you don't use versioning, you can use a new identifier (UUID, along with schema URL) for incompatible changes, or extend your schema to handle both old and new structures where possible.
 
 - Do I need to use version numbers in my Convention?
   - No. Version numbers are optional. JSON schemas can often be extended in backwards-compatible ways without explicit versioning:
@@ -175,7 +178,7 @@
   - The Convention remains valid for existing data even if deprecated. Tools should handle deprecated Conventions gracefully, potentially with warnings.
 
 - What if my `schema_url` or `spec_url` becomes unavailable?
-  - Convention authors should use stable hosting for URLs (e.g., GitHub releases, permanent DOIs). Tools consuming Conventions should implement caching strategies and graceful degradation when URLs are temporarily unavailable. The Convention properties remain valid even if the identifier URL is unreachable. Convention authors may register a new Convention conveying similar information if an identifying URL is irreconcilably lost, and should coordinate with downstream libraries about the change.
+  - The recommend inclusion of a UUID provides guaranteed consistency regardless of the `schema_url` and `spec_url`s availability. Convention authors should also use stable hosting for URLs (e.g., GitHub releases, permanent DOIs). Tools consuming Conventions should implement caching strategies and graceful degradation when URLs are temporarily unavailable. The Convention properties remain valid even if the schema and/or spec URL is unreachable. Convention authors may register a new Convention conveying similar information if an identifying URL is irreconcilably lost and a UUID was not defined, and should coordinate with downstream libraries about the change.
 
 ## Discovery and Governance
 
