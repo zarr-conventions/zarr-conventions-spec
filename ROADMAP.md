@@ -242,7 +242,7 @@ See the [zarr-conventions organization](https://github.com/zarr-conventions) for
 
 | Phase | Timeline | Key Deliverables |
 |-------|----------|------------------|
-| Phase 1: Finalization | Q5 2025 | Stable spec v1, comprehensive docs |
+| Phase 1: Finalization | Q4 2025 | Stable spec v1, comprehensive docs |
 | Phase 2: Tooling | Q1 2026 | Python/JS validators, enhanced templates |
 | Phase 3: Early Adoption | Q2 2026 | 5+ pilot conventions, library integrations |
 | Phase 4: Discovery | Q3 2026 | Website, rich ecosystem |

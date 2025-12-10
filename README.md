@@ -24,6 +24,7 @@ These are the requirements which motivated the conventions framework.
 - Conventions should be self describing in terms of the specific metadata fields they contain.
 - The conventions framework must support composability, allowing one Convention to extend or reference properties from another Convention.
 - Convention properties must be accessible at a predictable location in the metadata structure.
+- Minimal changes should be necessary for existing conventions to adopt this framework moving forward.
 
 Non-requirements
 - This specification addresses only _new data_; conventions do not retroactively apply to existing data written before the creation of the Conventions framework.
@@ -68,7 +69,7 @@ The `uuid` provides the most stable identification since it remains constant eve
 
 #### Versioning
 
-Conventions MAY use a versioning scheme to allow evolution over time. Versioned conventions SHOULD include the version information in the `schema_url` (e.g., `https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v1/schema.json"` to facilitate validation of specific versions. Versioned conventions MAY also include the version in the Convention metadata (`e.g., {'proj:version': "1"}`) for convenient version identification without url parsing. If a convention uses versioning, it MUST clearly define the semantic meaning of version numbers in its specification.
+Conventions MAY use a versioning scheme to allow evolution over time. Versioned conventions SHOULD include the version information in the `schema_url` (e.g., `https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v1/schema.json"` to facilitate validation of specific versions. Versioned conventions may include the version in the convention's own properties (not in the Zarr Conventions Metadata object) (`e.g., {'proj:version': "1"}`) for convenient version identification without url parsing. If a convention uses versioning, it MUST clearly define the semantic meaning of version numbers in its specification.
 
 ### Convention Properties
 
@@ -176,7 +177,7 @@ Conventions can extend objects defined by other conventions by adding namespaced
 }
 ```
 
-If a Convention wants to allow other conventions to extend its objects, its schema MUST set `additionalProperties: true` on those extensible objects. Since `additionalProperties` defaults to `false` in JSON Schema, conventions that do not explicitly set this to `true` will not support being extended by other conventions.
+If a Convention wants to allow other conventions to extend its objects, its schema MUST set `additionalProperties: true` on those extensible objects. Since `additionalProperties` defaults to `false` in JSON Schema, conventions that do not explicitly set this to `true` will not support being extended by other conventions. Note that the Convention Metadata Object itself (the object within the `zarr_conventions` array) is not extensible and MUST keep `additionalProperties: false`; only the convention's own properties nested directly under the root `attributes` level can allow additional properties for composability.
 
 ## Examples
 
