@@ -68,16 +68,23 @@
 - Why is one of the `uuid`, `schema_url` or `spec_url` fields required?
   - A UUID or at least one URL is required to serve as the unique identifier for the Convention. The UUID provides a consistent, unique identifier isolated from potential domain name issues, the schema_url provides validation capabilities, while the spec_url provides human-readable documentation. Having at least one ensures Conventions are both identifiable and discoverable.
 
+- Why isn't `schema_url` enough? Doesn't the URL already convey both uniqueness and version?
+  - It is a reasonable mental model, but the Zarr Conventions ecosystem has already demonstrated twice in its first year that URLs are not stable identifiers in practice:
+    - In late 2025, the upstream organization for convention repos was migrated from `zarr-experimental` to `zarr-conventions`, changing every convention's `schema_url` and `spec_url` overnight.
+    - In early 2026, the `geo-proj` convention was renamed to `proj`, changing both URLs again for the same logical convention.
+  - Datasets written before either move still describe the same logical convention afterward. Without a `uuid` in the Convention Metadata Object, a tool keying on `schema_url` cannot tell that a pre-rename and post-rename dataset use the same convention. With a `uuid`, that identity is preserved across any number of renames, re-hostings, or org migrations.
+  - URLs are pointers to content. UUIDs are identifiers. The two are doing different jobs, and the past year of real renames is evidence that the framework needs both.
+
 - Should I provide _all_of_ `uuid`, `schema_url` and `spec_url`?
-  - It's recommended to provide all three when possible. The `uuid` provides consistency if domains for the spec and schema change, the `schema_url` enables validation and tooling support, while the `spec_url` provides human-readable documentation. If you can only provide one, choose based on your use case: `uuid` for guaranteed consistency, `schema_url` for machine validation, `spec_url` for human consumption.
+  - Yes, whenever possible. Each field does a different job, and the cost of including all three is two extra lines in the CMO. The `uuid` provides consistency if domains for the spec and schema change, the `schema_url` enables validation and tooling support, and the `spec_url` provides human-readable documentation. If you truly can only provide one, prefer `uuid` because identification stability is the hardest property to add later.
 
 - When should I use `uuid`, `schema_url`, or `spec_url` for identification?
-  - It is RECOMMENDED to use both a UUID and schema_url/spec_url together for maximum robustness:
-    - `uuid` provides a permanent, immutable identifier that never changes, even if hosting locations change
-    - `schema_url` enables validation and provides a way to fetch the schema for automated tooling
-    - `spec_url` provides human-readable documentation
-  - Using all three together combines the stability of UUIDs with the practical benefits of URL-based discovery and validation.
-  - If you only provide URLs (no UUID), your Convention is still valid but may be harder to track if the hosting location changes.
+  - Always include a `uuid` alongside `schema_url` and (where applicable) `spec_url`. The three fields serve different jobs:
+    - `uuid` is the permanent identifier. It survives renames, re-hostings, org migrations, and DNS changes.
+    - `schema_url` enables validation and lets generic tooling fetch the schema.
+    - `spec_url` provides human-readable documentation.
+  - Concrete cost of omitting `uuid`: some shipped tools gate their convention-aware code paths on a `uuid` match (see [Existing Implementations](#existing-implementations)). A dataset that declares the convention only via `schema_url` may silently fall back to legacy parsing in those tools and lose its value. If the convention's `schema_url` is later changed, even tools that did key on the URL stop matching.
+  - The spec accepts CMOs with `schema_url` or `spec_url` alone for backwards compatibility, but this should be treated as a last resort rather than a default.
 
 - Does UUID or schema_url take precedence as the primary identifier?
   - UUID takes precedence over all other identifiers when present. The identifier priority order is:
@@ -113,6 +120,13 @@
   - Any type of UUID is acceptable, but UUID v4 is the simplest and most commonly used.
   - UUIDs must conform to [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562.html).
 
+- Aren't UUIDs clunky for users to type or copy by hand?
+  - In practice, end users almost never type or copy UUIDs themselves. The expected workflow is:
+    - The convention author generates the UUID once when they create the convention, and publishes it in the convention's README, schema, and example metadata.
+    - Data producers either copy the full CMO from the convention's documentation, or use a writer library that fills it in for them (e.g., `rioxarray`'s CRS writers add the proj CMO including its UUID automatically; GDAL's Zarr driver does the same when creating georeferenced datasets).
+    - Data consumers compare UUIDs programmatically; they don't read them visually.
+  - A UUID's role here is similar to a Julia package UUID or a database primary key: identification by tooling, not by humans. The visible cost is one extra line in your CMO. The invisible benefit is migration-resilience across the kinds of renames that have already happened twice in this ecosystem.
+
 - Why is the `name` field recommended?
   - We will use the name to populate the website showing all Conventions; tools also will use it for nice metadata representations.
 
@@ -121,6 +135,14 @@
 
 - When should I include a trailing colon (`:`) in my convention's `name`?
   - When using namespace prefixing (in contrast to nesting), it is RECOMMENDED to include the colon in the name (e.g., `proj:` rather than `proj`) to clearly indicate the prefixing approach.
+
+- Can tools use the `name` field to identify a convention?
+  - No. The `name` field is for human-readable display only and MUST NOT be used by tools to identify a convention. Specifically:
+    - Names are not guaranteed to be unique across conventions.
+    - A convention may change its `name` without changing its identity. For example, the
+    `spatial` convention recently dropped a `:` suffix.
+    - Two unrelated conventions could legitimately choose the same `name`.
+  - Tools that need to match a convention MUST use the identifier precedence rule (`uuid`, then `schema_url`, then `spec_url`). Implementations that key on `name` for identification should treat that as a conformance bug and migrate to `uuid` matching.
 
 ## Multiple Conventions and Composability
 
@@ -177,8 +199,11 @@
   - Use appropriate HTTP status codes if hosting your own schemas (e.g., 410 Gone with information about the replacement).
   - The Convention remains valid for existing data even if deprecated. Tools should handle deprecated Conventions gracefully, potentially with warnings.
 
-- What if my `schema_url` or `spec_url` becomes unavailable?
-  - The recommend inclusion of a UUID provides guaranteed consistency regardless of the `schema_url` and `spec_url`s availability. Convention authors should also use stable hosting for URLs (e.g., GitHub releases, permanent DOIs). Tools consuming Conventions should implement caching strategies and graceful degradation when URLs are temporarily unavailable. The Convention properties remain valid even if the schema and/or spec URL is unreachable. Convention authors may register a new Convention conveying similar information if an identifying URL is irreconcilably lost and a UUID was not defined, and should coordinate with downstream libraries about the change.
+- What if my `schema_url` or `spec_url` becomes unavailable or changes?
+  - If a `uuid` is present in the CMO, identification continues to work: tools key on the UUID, not the URL. Validation against a fetched schema may temporarily fail when the URL is unreachable, but the dataset remains correctly identified as following the convention.
+  - If a `uuid` is NOT present and the `schema_url` changes (for example, because the convention repo is renamed or moved between organizations), the failure mode is silent. Tools that keyed on the old URL string stop matching, and downstream behavior depends on each tool's fallback path: some lose CRS, some skip the convention entirely, some fall back to legacy parsing. Datasets written before the change are effectively orphaned with respect to the convention.
+  - Convention authors should use stable hosting for URLs (e.g., GitHub releases, permanent DOIs) AND include a `uuid`, so that identification is robust to the URL changes that inevitably do occur. Tools consuming Conventions should implement caching for fetched schemas and graceful degradation when URLs are temporarily unavailable.
+  - If an identifying URL is irreconcilably lost and a `uuid` was not defined, the convention author may need to register a new convention conveying similar information and coordinate with downstream libraries about the migration. This is the failure mode that the `uuid` recommendation is designed to prevent.
 
 ## Discovery and Governance
 
@@ -210,6 +235,22 @@
  org.
   - Having a standalone org for conventions gives a central place for convention repos to be hosted in one place.
   - The `zarr-developers` org is specifically for software under the NumFocus fiscally sponsored Zarr project. 
+
+## Existing Implementations
+
+- Which tools already read or write `zarr_conventions`?
+  - Several tools in the geospatial Zarr ecosystem consult the framework as of mid-2026. Behaviors below reflect current source; check the linked code before relying on a specific entry, since implementations evolve.
+
+    | Tool | Reads `zarr_conventions`? | Identifies conventions by | `proj` | `spatial` | `multiscales` |
+    |---|---|---|---|---|---|
+    | [GDAL Zarr driver](https://github.com/OSGeo/gdal/tree/master/frmts/zarr) | Yes | `uuid` (exact match) | read + write | read + write | read + write |
+    | [titiler-eopf](https://github.com/EOPF-Explorer/titiler-eopf) | Yes (gates code path) | `uuid` (exact match) | read | read | read |
+    | [rioxarray](https://github.com/corteva/rioxarray) | Yes | `name` (uuid ignored on read) | read + write | read + write | not implemented |
+    | [deck.gl-raster](https://github.com/developmentseed/deck.gl-raster) (via `@developmentseed/geozarr`) | No | bare prefix lookup on `attributes` | read | read | read |
+    | [topozarr](https://github.com/maxrjones/topozarr) | No on read; emits full CMO including `uuid` on write | N/A on read | write | write | write |
+
+  - GDAL and titiler-eopf both gate their convention-aware code paths on a `uuid` match. Datasets written without a `uuid` either silently fall back to legacy EOPF parsing (GDAL) or to a less-capable V0 path (titiler-eopf). This is the concrete reason the spec recommends always including a `uuid`.
+  - This list is not exhaustive. Implementers are encouraged to open a PR adding their tool, noting which fields they consult and how they identify conventions.
 
 ## Working with Existing Data
 
