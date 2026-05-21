@@ -83,7 +83,7 @@
     - `uuid` is the permanent identifier. It survives renames, re-hostings, org migrations, and DNS changes.
     - `schema_url` enables validation and lets generic tooling fetch the schema.
     - `spec_url` provides human-readable documentation.
-  - Concrete cost of omitting `uuid`: some shipped tools gate their convention-aware code paths on a `uuid` match (see [Existing Implementations](#existing-implementations)). A dataset that declares the convention only via `schema_url` may silently fall back to legacy parsing in those tools and lose its value. If the convention's `schema_url` is later changed, even tools that did key on the URL stop matching.
+  - Concrete cost of omitting `uuid`: some shipped tools gate their convention-aware code paths on a `uuid` match. A dataset that declares the convention only via `schema_url` may silently fall back to legacy parsing in those tools and lose its value. If the convention's `schema_url` is later changed, even tools that did key on the URL stop matching.
   - The spec accepts CMOs with `schema_url` or `spec_url` alone for backwards compatibility, but this should be treated as a last resort rather than a default.
 
 - Does UUID or schema_url take precedence as the primary identifier?
