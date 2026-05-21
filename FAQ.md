@@ -236,7 +236,6 @@
   - Having a standalone org for conventions gives a central place for convention repos to be hosted in one place.
   - The `zarr-developers` org is specifically for software under the NumFocus fiscally sponsored Zarr project. 
 
-
 ## Working with Existing Data
 
 - How should we handle pre-existing "implicit Conventions" like [ome-zarr](https://ome-zarr.readthedocs.io/en/stable/) or Xarray's `_FillValue` encoding?
