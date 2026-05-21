@@ -236,21 +236,6 @@
   - Having a standalone org for conventions gives a central place for convention repos to be hosted in one place.
   - The `zarr-developers` org is specifically for software under the NumFocus fiscally sponsored Zarr project. 
 
-## Existing Implementations
-
-- Which tools already read or write `zarr_conventions`?
-  - Several tools in the geospatial Zarr ecosystem consult the framework as of mid-2026. Behaviors below reflect current source; check the linked code before relying on a specific entry, since implementations evolve.
-
-    | Tool | Reads `zarr_conventions`? | Identifies conventions by | `proj` | `spatial` | `multiscales` |
-    |---|---|---|---|---|---|
-    | [GDAL Zarr driver](https://github.com/OSGeo/gdal/tree/master/frmts/zarr) | Yes | `uuid` (exact match) | read + write | read + write | read + write |
-    | [titiler-eopf](https://github.com/EOPF-Explorer/titiler-eopf) | Yes (gates code path) | `uuid` (exact match) | read | read | read |
-    | [rioxarray](https://github.com/corteva/rioxarray) | Yes | `name` (uuid ignored on read) | read + write | read + write | not implemented |
-    | [deck.gl-raster](https://github.com/developmentseed/deck.gl-raster) (via `@developmentseed/geozarr`) | No | bare prefix lookup on `attributes` | read | read | read |
-    | [topozarr](https://github.com/maxrjones/topozarr) | No on read; emits full CMO including `uuid` on write | N/A on read | write | write | write |
-
-  - GDAL and titiler-eopf both gate their convention-aware code paths on a `uuid` match. Datasets written without a `uuid` either silently fall back to legacy EOPF parsing (GDAL) or to a less-capable V0 path (titiler-eopf). This is the concrete reason the spec recommends always including a `uuid`.
-  - This list is not exhaustive. Implementers are encouraged to open a PR adding their tool, noting which fields they consult and how they identify conventions.
 
 ## Working with Existing Data
 
