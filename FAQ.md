@@ -143,6 +143,11 @@
 
 ## Versioning and Changes
 
+The framework specification itself follows an additive-only evolution contract, as detailed in [Specification Evolution](README.md#specification-evolution).
+
+For longer-form guidance on implementation patterns across versioned and un-versioned conventions, see [Implementation Contracts](https://zarr-conventions.github.io/zarr-conventions-guidance/implementation-contracts) in the companion `zarr-conventions-guidance` repository.
+
+
 - How do I version my Convention?
   - The Zarr Conventions framework does not require versioning or prescribe semantics for versioning schemes. However, if you choose to version your Convention, it is RECOMMENDED to:
     - Include version information in the schema URL (e.g., using git tags like `/v1/` or versioned paths like `/v1.0.0/`)
