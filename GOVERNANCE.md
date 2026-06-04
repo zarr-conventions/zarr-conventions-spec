@@ -67,7 +67,7 @@ Emeritus members lose merge permissions but retain standing in the project. An e
 
 ### Removal
 
-In exceptional cases, such as violations of community standards, a CDG member MAY be removed by a 2/3 vote of the active CDG. The vote is open for 14 days. This mechanism is intended for serious conduct issues, not for resolving technical disagreements. Zarr conventions operates within the broader Zarr Project ecosystem and follow the [Zarr Code of Conduct](https://github.com/zarr-developers/.github/blob/main/CODE_OF_CONDUCT.md).
+In exceptional cases, such as violations of community standards, a CDG member MAY be removed by a 2/3 vote of the active CDG. The vote is open for 14 days. This mechanism is intended for serious conduct issues, not for resolving technical disagreements. Zarr Conventions operates within the broader Zarr Project ecosystem and follows the [Zarr Code of Conduct](https://github.com/zarr-developers/.github/blob/main/CODE_OF_CONDUCT.md). Violations may be reported to the Zarr Steering Council as instructed in the [Zarr Code of Conduct](https://github.com/zarr-developers/.github/blob/main/CODE_OF_CONDUCT.md).
 
 ## Relationship to broader Zarr governance
 
