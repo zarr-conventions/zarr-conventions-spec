@@ -35,6 +35,8 @@ Anyone who opens an issue, files a pull request, or otherwise participates in th
 
 ## Decision-making
 
+Discussion is encouraged to happen openly on GitHub. Conversations may also take place in other venues, including the [Zarr Conventions Zulip channel](https://ossci.zulipchat.com/#narrow/channel/604429-Zarr-Conventions), community meetings, and private discussions. Decisions, including votes, are recorded on GitHub in the relevant pull request, issue, or discussion.
+
 ### Pull requests
 
 All changes to the framework repositories in the `zarr-conventions` organization are made via pull request. The framework repositories currently under CDG control are:
@@ -56,7 +58,7 @@ Substantive changes SHOULD be discussed openly for at least 7 days before mergin
 
 ### Disagreement
 
-Where CDG members disagree on a pull request, the merge is held while discussion continues. If consensus cannot be reached after the 7-day open-discussion period, any CDG member MAY call for a vote. Votes are open for 14 days. The outcome is decided by a majority of the CDG members who cast a vote. Emeritus members do not vote. Disagreements about whether a particular change is substantive are resolved through the same mechanism.
+Where CDG members disagree on a pull request, the merge is held while discussion continues. If consensus cannot be reached after the 7-day open-discussion period, any CDG member MAY call for a vote. Votes are cast on GitHub in the pull request, issue, or discussion where the disagreement arose and are open for 14 days. The outcome is decided by a majority of the CDG members who cast a vote. Emeritus members do not vote. Disagreements about whether a particular change is substantive are resolved through the same mechanism.
 
 ## CDG membership
 
@@ -74,7 +76,7 @@ Emeritus members lose merge permissions but retain standing in the project. An e
 
 ### Removal
 
-In exceptional cases, such as violations of community standards, a CDG member MAY be removed by a 2/3 vote of the active CDG. The vote is open for 14 days. This mechanism is intended for serious conduct issues, not for resolving technical disagreements. Zarr Conventions operates within the broader Zarr Project ecosystem and follows the [Zarr Code of Conduct](https://github.com/zarr-developers/.github/blob/main/CODE_OF_CONDUCT.md). Violations may be reported to the Zarr Steering Council as instructed in the [Zarr Code of Conduct](https://github.com/zarr-developers/.github/blob/main/CODE_OF_CONDUCT.md).
+In exceptional cases, such as violations of community standards, a CDG member MAY be removed by a 2/3 vote of the active CDG. The vote is open for 14 days. Given the sensitive nature of conduct issues, discussion of a proposed removal MAY take place in a private venue, but the outcome of the vote is recorded on GitHub. This mechanism is intended for serious conduct issues, not for resolving technical disagreements. Zarr Conventions operates within the broader Zarr Project ecosystem and follows the [Zarr Code of Conduct](https://github.com/zarr-developers/.github/blob/main/CODE_OF_CONDUCT.md). Violations may be reported to the Zarr Steering Council as instructed in the [Zarr Code of Conduct](https://github.com/zarr-developers/.github/blob/main/CODE_OF_CONDUCT.md).
 
 ## Relationship to broader Zarr governance
 
