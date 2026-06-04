@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document describes how decisions are made for the Zarr Conventions framework. It covers the maintenance of the framework specification itself, the supporting tooling, and the `zarr-conventions` GitHub organization. It does not govern individual Conventions, which are authored and maintained independently by their own authors.
+This document describes how decisions are made for the Zarr Conventions framework. It covers the maintenance of the framework specification itself, the framework repositories listed under [Pull requests](#pull-requests), and the `zarr-conventions` GitHub organization. It does not govern individual Conventions or independently maintained tooling, which are authored and maintained by their own authors.
 
 ## Principles
 
@@ -10,13 +10,13 @@ The Zarr Conventions framework is intentionally decentralized:
 
 - **Anyone can author a Convention.** No CDG approval is required to publish or use a new Convention.
 - **Adoption is determined by the community.** A Convention's success is measured by uptake among data publishers and tool implementers, not by any central body's endorsement.
-- **The CDG governs the framework, not the conventions.** This document describes how the CDG maintains the framework's specification, supporting tooling, and organization. The rationale for this decentralized model is documented in [FAQ.md](FAQ.md).
+- **The CDG governs the framework, not the conventions.** This document describes how the CDG maintains the framework's specification, the framework repositories, and the organization. The rationale for this decentralized model is documented in [FAQ.md](FAQ.md).
 
 ## Roles
 
 ### Core Developers Group (CDG)
 
-The CDG maintains the conventions framework specification, the supporting tooling, and the `zarr-conventions` GitHub organization. The current members of the CDG, who together drafted the framework at the 2025 Zarr Summit, are:
+The CDG maintains the conventions framework specification, the other framework repositories listed under [Pull requests](#pull-requests), and the `zarr-conventions` GitHub organization. The current members of the CDG, who together drafted the framework at the 2025 Zarr Summit, are:
 
 - Alistair Miles ([@alimanfoo](https://github.com/alimanfoo))
 - Emmanuel Mathot ([@emmanuelmathot](https://github.com/emmanuelmathot))
@@ -37,9 +37,16 @@ Anyone who opens an issue, files a pull request, or otherwise participates in th
 
 ### Pull requests
 
-All changes to repositories in the `zarr-conventions` organization are made via pull request. Pull requests require at least one approval from a CDG member before being merged.
+All changes to the framework repositories in the `zarr-conventions` organization are made via pull request. The framework repositories currently under CDG control are:
 
-For changes to the framework specification (the normative documents and JSON schema in this repository), CDG members SHOULD seek approval from a second CDG member before merging. Documentation, examples, and tooling changes MAY be merged with a single approval at the merging member's discretion.
+- [zarr-conventions-spec](https://github.com/zarr-conventions/zarr-conventions-spec) — the framework specification, JSON schema, and supporting documentation
+- [.github](https://github.com/zarr-conventions/.github) — organization-level documentation, including the Convention discovery table
+
+For changes to the framework specification (the normative documents and JSON schema in `zarr-conventions-spec`), approvals SHOULD be obtained from two CDG members other than the pull request's author before merging.
+
+All other changes to framework repositories — including documentation, examples, and tooling — require approval from a CDG member or authorship by a CDG member. A pull request's author MAY merge their own pull request once these requirements are met; CDG members merging their own pull requests SHOULD use their judgment as to whether to seek review from another CDG member first.
+
+These requirements do not apply to other repositories hosted in the organization, which are maintained by their own authors under their own review practices. This includes Convention repositories, as described under [Convention lifecycle](#convention-lifecycle), and independently maintained tooling such as [zarr-cm](https://github.com/zarr-conventions/zarr-cm). New repositories in the organization, including those created by CDG members, default to independent maintenance; a repository becomes a framework repository only by being added to the list above by amendment to this document.
 
 ### Substantive changes
 
@@ -77,9 +84,9 @@ The Zarr Conventions framework operates within the broader Zarr Project ecosyste
 
 ## Convention lifecycle
 
-Individual Conventions are authored and maintained outside the `zarr-conventions` organization by their own authors. The CDG does not approve, reject, or rank Conventions; the community decides which Conventions are useful through adoption.
+Individual Conventions are authored and maintained by their own authors, independently of the CDG. A Convention's repository may be hosted anywhere, including within the `zarr-conventions` organization. Hosting within the organization does not transfer editorial control to the CDG: the Convention's authors remain its maintainers and decide what is merged into its repository. The CDG does not approve, reject, or rank Conventions; the community decides which Conventions are useful through adoption.
 
-The `zarr-conventions` organization provides an optional central location for Convention discovery, as described in [FAQ.md](FAQ.md). Inclusion in this discovery surface is a curatorial decision made by the CDG and is not an endorsement of correctness or quality.
+The `zarr-conventions` organization provides an optional central location for Convention discovery, as described in [FAQ.md](FAQ.md). Guidance for authoring and sharing a new Convention, including a template repository, is available in the [organization README](https://github.com/zarr-conventions#define-your-own-convention). Convention authors who would like their Convention's repository hosted within the organization may request this by opening an issue in the [organization repository](https://github.com/zarr-conventions/.github). Inclusion in the discovery surface and hosting within the organization are curatorial decisions made by the CDG and are not an endorsement of correctness or quality.
 
 A process for handling orphaned Conventions, whose authors are no longer responsive, is not yet established. The CDG intends to develop one and will document it via amendment to this document.
 
