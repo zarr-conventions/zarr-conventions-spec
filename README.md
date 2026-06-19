@@ -56,7 +56,7 @@ Additionally, a Convention Metadata Object SHOULD contain the following fields:
 The Convention Metadata Object MAY contain the following field:
 - `description` - a concise description of the convention.
 
-The Convention Metadata Object MUST NOT contain additional fields beyond those specified above.
+The Convention Metadata Object MUST NOT contain fields beyond those defined by this or future revisions of this specification. Implementations SHOULD ignore Convention Metadata Object fields they do not recognize (see [Specification Evolution](#specification-evolution)).
 
 #### Convention Identity
 
@@ -178,6 +178,12 @@ Conventions can extend objects defined by other conventions by adding namespaced
 ```
 
 If a Convention wants to allow other conventions to extend its objects, its schema MUST set `additionalProperties: true` on those extensible objects. Since `additionalProperties` defaults to `false` in JSON Schema, conventions that do not explicitly set this to `true` will not support being extended by other conventions. Note that the Convention Metadata Object itself (the object within the `zarr_conventions` array) is not extensible and MUST keep `additionalProperties: false`; only the convention's own properties nested directly under the root `attributes` level can allow additional properties for composability.
+
+### Specification Evolution
+
+Starting with version 1, this specification follows an additive-only contract: future revisions MAY add new optional fields to the Convention Metadata Object, but existing fields MUST NOT be renamed, retyped, or have their `MUST` / `MUST NOT` requirements changed. Lower-strength normative keywords (`SHOULD` / `SHOULD NOT` / `MAY`) on existing fields MAY be refined in future revisions. The Convention Metadata Object therefore carries no framework-version field. Implementations can rely on the names, types, and absolute requirements of fields defined here without performing version dispatch on the framework specification itself.
+
+This contract governs the framework specification only. Individual conventions choose their own versioning strategy independently (see [Versioning](#versioning)).
 
 ## Examples
 

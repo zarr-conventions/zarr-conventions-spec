@@ -17,7 +17,7 @@
 
 - What's the value of having a `zarr_conventions` field? Couldn't we just document Conventions informally?
   - The `zarr_conventions` field provides significant practical value for both data producers and consumers:
-    - **For data consumers**: It enables automated validation and tooling. As one implementor noted: "it lets a Zarr array or group say 'In addition to being valid Zarr, I also do X and Y'." Software can read `zarr_conventions`, fetch the JSON schemas, and validate the data - the only network trip required is fetching the convention schema. This makes it easy to say "we can't understand your data because it's not valid" and point to specific validation failures.
+    - **For data consumers**: It enables automated validation and tooling. As one implementer noted: "it lets a Zarr array or group say 'In addition to being valid Zarr, I also do X and Y'." Software can read `zarr_conventions`, fetch the JSON schemas, and validate the data - the only network trip required is fetching the convention schema. This makes it easy to say "we can't understand your data because it's not valid" and point to specific validation failures.
     - **For data producers**: It provides a clear, machine-readable way to declare conformance to Conventions, making it easier for consumers to understand and use the data correctly.
     - **For the ecosystem**: It prevents gatekeeping while maintaining quality through community adoption. Organizations can publish Conventions without approval from a central authority. The community decides (via adoption and use) if a given Convention is valuable, rather than requiring approval from a standards body.
     - **For tooling developers**: It enables generic tools that weren't built for specific Conventions to still validate and work with them, as long as those Conventions provide schemas.
@@ -142,6 +142,11 @@
   - If your Convention has requirements that span a hierarchy (e.g., a group structure with specific expected child arrays), document those requirements in your Convention specification. Tools reading the data should validate the entire structure as needed.
 
 ## Versioning and Changes
+
+The framework specification itself follows an additive-only evolution contract, as detailed in [Specification Evolution](README.md#specification-evolution).
+
+For longer-form guidance on implementation patterns across versioned and un-versioned conventions, see [Implementation Contracts](https://zarr-conventions.github.io/zarr-conventions-guidance/implementation-contracts) in the companion `zarr-conventions-guidance` repository.
+
 
 - How do I version my Convention?
   - The Zarr Conventions framework does not require versioning or prescribe semantics for versioning schemes. However, if you choose to version your Convention, it is RECOMMENDED to:
