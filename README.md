@@ -71,6 +71,8 @@ The `uuid` provides the most stable identification since it remains constant eve
 
 Conventions MAY use a versioning scheme to allow evolution over time. Versioned conventions SHOULD include the version information in the `schema_url` (e.g., `https://raw.githubusercontent.com/zarr-experimental/geo-proj/refs/tags/v1/schema.json"` to facilitate validation of specific versions. Versioned conventions may include the version in the convention's own properties (not in the Zarr Conventions Metadata object) (`e.g., {'proj:version': "1"}`) for convenient version identification without url parsing. If a convention uses versioning, it MUST clearly define the semantic meaning of version numbers in its specification.
 
+Conventions which do not include version information in the convention's own properties SHOULD use a new UUID when breaking changes are introduced.
+
 ### Convention Properties
 
 Convention properties exist at the root `attributes` level. This enables composability, allowing conventions to extend and reference properties from other conventions.
